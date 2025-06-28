@@ -310,6 +310,8 @@
     <div><span id="lbl-material-cost">Costo del material:</span> <span>RD$<span id="materialCost">0.00</span></span></div>
     <div><span id="lbl-energy-cost">Costo de energía eléctrica:</span> <span>RD$<span id="energyCost">0.00</span></span></div>
     <div><span id="lbl-printing-cost">Costo de impresión:</span> <span>RD$<span id="printingCost">0.00</span></span></div>
+    <div><span id="lbl-labor-cost-admin">Costo de mano de obra:</span> <span>RD$<span id="laborCostAdmin">0.00</span></span></div>
+    <div><span id="lbl-other-costs-admin">Otros costos:</span> <span>RD$<span id="otherCostsAdmin">0.00</span></span></div>
     <div><span id="lbl-total-cost">Costo total:</span> <span>RD$<span id="totalCost">0.00</span></span></div>
     <div><span id="lbl-suggested-price">Precio sugerido:</span> <span>RD$<span id="suggestedPrice">0.00</span></span></div>
     <div><span id="lbl-net-profit">Ganancia neta:</span> <span>RD$<span id="netProfit">0.00</span></span></div>
@@ -317,9 +319,10 @@
 
   <div class="section-title" id="lbl-customer-results">Detalles de la Factura (Cliente)</div>
   <div class="results customer-results">
-    <div><span id="lbl-customer-material-cost">Costo del material:</span> <span>RD$<span id="customerMaterialCost">0.00</span></span></div>
-    <div><span id="lbl-customer-energy-cost">Costo de energía eléctrica:</span> <span>RD$<span id="customerEnergyCost">0.00</span></span></div>
-    <div><span id="lbl-customer-printing-cost">Costo de impresión:</span> <span>RD$<span id="customerPrintingCost">0.00</span></span></div>
+    <div><span id="lbl-customer-material-cost">Materiales utilizados:</span> <span>RD$<span id="customerMaterialCost">0.00</span></span></div>
+    <div><span id="lbl-customer-energy-cost">Consumo energético:</span> <span>RD$<span id="customerEnergyCost">0.00</span></span></div>
+    <div><span id="lbl-customer-printing-cost">Tiempo de máquina:</span> <span>RD$<span id="customerPrintingCost">0.00</span></span></div>
+    <div><span id="lbl-customer-service-cost">Servicio técnico:</span> <span>RD$<span id="customerServiceCost">0.00</span></span></div>
     <div><span id="lbl-customer-total-price">Precio Total:</span> <span>RD$<span id="customerTotalPrice">0.00</span></span></div>
   </div>
 
@@ -367,12 +370,15 @@
       "lbl-material-cost": "Costo del material:",
       "lbl-energy-cost": "Costo de energía eléctrica:",
       "lbl-printing-cost": "Costo de impresión:",
+      "lbl-labor-cost-admin": "Costo de mano de obra:",
+      "lbl-other-costs-admin": "Otros costos:",
       "lbl-total-cost": "Costo total:",
       "lbl-suggested-price": "Precio sugerido:",
       "lbl-net-profit": "Ganancia neta:",
-      "lbl-customer-material-cost": "Costo del material:",
-      "lbl-customer-energy-cost": "Costo de energía eléctrica:",
-      "lbl-customer-printing-cost": "Costo de impresión:",
+      "lbl-customer-material-cost": "Materiales utilizados:",
+      "lbl-customer-energy-cost": "Consumo energético:",
+      "lbl-customer-printing-cost": "Tiempo de máquina:",
+      "lbl-customer-service-cost": "Servicio técnico:",
       "lbl-customer-total-price": "Precio Total:",
       "btn-export": "Exportar a PDF",
       "btn-save": "Guardar en Historial",
@@ -396,12 +402,15 @@
       "lbl-material-cost": "Material Cost:",
       "lbl-energy-cost": "Electricity Cost:",
       "lbl-printing-cost": "Printing Cost:",
+      "lbl-labor-cost-admin": "Labor Cost:",
+      "lbl-other-costs-admin": "Other Costs:",
       "lbl-total-cost": "Total Cost:",
       "lbl-suggested-price": "Suggested Price:",
       "lbl-net-profit": "Net Profit:",
-      "lbl-customer-material-cost": "Material Cost:",
-      "lbl-customer-energy-cost": "Electricity Cost:",
-      "lbl-customer-printing-cost": "Printing Cost:",
+      "lbl-customer-material-cost": "Materials used:",
+      "lbl-customer-energy-cost": "Energy consumption:",
+      "lbl-customer-printing-cost": "Machine time:",
+      "lbl-customer-service-cost": "Technical service:",
       "lbl-customer-total-price": "Total Price:",
       "btn-export": "Export to PDF",
       "btn-save": "Save to History",
@@ -434,12 +443,15 @@
     materialCost: document.getElementById("materialCost"),
     energyCost: document.getElementById("energyCost"),
     printingCost: document.getElementById("printingCost"),
+    laborCostAdmin: document.getElementById("laborCostAdmin"),
+    otherCostsAdmin: document.getElementById("otherCostsAdmin"),
     totalCost: document.getElementById("totalCost"),
     suggestedPrice: document.getElementById("suggestedPrice"),
     netProfit: document.getElementById("netProfit"),
     customerMaterialCost: document.getElementById("customerMaterialCost"),
     customerEnergyCost: document.getElementById("customerEnergyCost"),
     customerPrintingCost: document.getElementById("customerPrintingCost"),
+    customerServiceCost: document.getElementById("customerServiceCost"),
     customerTotalPrice: document.getElementById("customerTotalPrice")
   };
 
@@ -459,7 +471,7 @@
     const energyCost = energyConsumption * electricityPrice;
     const printingCost = (electricityPrice * printerPowerKw + depreciationPerHour) * printHours;
     const materialCost = (weight / 1000) * filamentPrice;
-    const totalCost = materialCost + energyCost + laborCost + otherCosts;
+    const totalCost = materialCost + energyCost + printingCost + laborCost + otherCosts;
     const suggestedPrice = totalCost * (1 + margin / 100);
     const netProfit = suggestedPrice - totalCost;
 
@@ -467,14 +479,23 @@
     results.materialCost.textContent = materialCost.toFixed(2);
     results.energyCost.textContent = energyCost.toFixed(2);
     results.printingCost.textContent = printingCost.toFixed(2);
+    results.laborCostAdmin.textContent = laborCost.toFixed(2);
+    results.otherCostsAdmin.textContent = otherCosts.toFixed(2);
     results.totalCost.textContent = totalCost.toFixed(2);
     results.suggestedPrice.textContent = suggestedPrice.toFixed(2);
     results.netProfit.textContent = netProfit.toFixed(2);
 
-    // Resultados para cliente
-    results.customerMaterialCost.textContent = materialCost.toFixed(2);
-    results.customerEnergyCost.textContent = energyCost.toFixed(2);
-    results.customerPrintingCost.textContent = printingCost.toFixed(2);
+    // Resultados para cliente (ajustados para que sumen exactamente el precio total)
+    const serviceCost = laborCost + otherCosts; // Combinamos mano de obra y otros costos como "servicio técnico"
+    const adjustedPrintingCost = printingCost * (suggestedPrice / totalCost);
+    const adjustedMaterialCost = materialCost * (suggestedPrice / totalCost);
+    const adjustedEnergyCost = energyCost * (suggestedPrice / totalCost);
+    const adjustedServiceCost = serviceCost * (suggestedPrice / totalCost);
+    
+    results.customerMaterialCost.textContent = adjustedMaterialCost.toFixed(2);
+    results.customerEnergyCost.textContent = adjustedEnergyCost.toFixed(2);
+    results.customerPrintingCost.textContent = adjustedPrintingCost.toFixed(2);
+    results.customerServiceCost.textContent = adjustedServiceCost.toFixed(2);
     results.customerTotalPrice.textContent = suggestedPrice.toFixed(2);
   }
 
@@ -488,7 +509,7 @@
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     
-    const customerName = document.getElementById("customerName").value || "Cliente no especificado";
+    const customerName = document.getElementById("customerName").value || (currentLang === 'es' ? "Cliente no especificado" : "Unspecified customer");
     const invoiceNumber = document.getElementById("invoiceNumber").value || "FAC-00000";
     const lang = translations[currentLang];
     
@@ -515,7 +536,7 @@
     // Fecha
     const now = new Date();
     const dateStr = now.toLocaleDateString();
-    doc.text(`Fecha: ${dateStr}`, 180, 45, null, null, "right");
+    doc.text(`${currentLang === 'es' ? 'Fecha' : 'Date'}: ${dateStr}`, 180, 45, null, null, "right");
     
     // Resultados para el cliente
     doc.setFontSize(16);
@@ -531,6 +552,8 @@
     doc.text(`${lang["lbl-customer-energy-cost"]}: RD$${results.customerEnergyCost.textContent}`, 30, yPos);
     yPos += 10;
     doc.text(`${lang["lbl-customer-printing-cost"]}: RD$${results.customerPrintingCost.textContent}`, 30, yPos);
+    yPos += 10;
+    doc.text(`${lang["lbl-customer-service-cost"]}: RD$${results.customerServiceCost.textContent}`, 30, yPos);
     yPos += 15;
     
     // Precio total
@@ -541,10 +564,10 @@
     // Nota al pie
     doc.setFontSize(10);
     doc.setFont(undefined, 'normal');
-    doc.text("Gracias por su preferencia - 3DCraftRD", 105, 280, null, null, "center");
+    doc.text(currentLang === 'es' ? "Gracias por su preferencia - 3DCraftRD" : "Thank you for your business - 3DCraftRD", 105, 280, null, null, "center");
     
     // Guardar el PDF
-    doc.save(`Factura_${invoiceNumber}.pdf`);
+    doc.save(`${currentLang === 'es' ? 'Factura' : 'Invoice'}_${invoiceNumber}.pdf`);
   }
 
   function saveToHistory() {
@@ -552,7 +575,7 @@
     const now = new Date().toLocaleString();
     const data = {
       date: now,
-      customerName: document.getElementById("customerName").value || "Sin nombre",
+      customerName: document.getElementById("customerName").value || (currentLang === 'es' ? "Sin nombre" : "No name"),
       invoiceNumber: document.getElementById("invoiceNumber").value || generateInvoiceNumber(),
       electricityPrice: document.getElementById("electricityPrice").value,
       printHours: document.getElementById("printHours").value,
