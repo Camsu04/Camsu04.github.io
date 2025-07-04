@@ -138,7 +138,9 @@
     .btn-save,
     .btn-lang,
     .btn-dashboard,
-    .btn-template {
+    .btn-template,
+    .btn-payment,
+    .btn-workflow {
       display: inline-block;
       margin-top: 10px;
       margin-right: 10px;
@@ -182,12 +184,24 @@
       color: white;
     }
 
+    .btn-payment {
+      background: linear-gradient(to right, #FFC107, #FFA000);
+      color: white;
+    }
+
+    .btn-workflow {
+      background: linear-gradient(to right, #00BCD4, #0097A7);
+      color: white;
+    }
+
     .btn-export:hover,
     .btn-save:hover,
     .btn-clear:hover,
     .btn-lang:hover,
     .btn-dashboard:hover,
-    .btn-template:hover {
+    .btn-template:hover,
+    .btn-payment:hover,
+    .btn-workflow:hover {
       transform: translateY(-3px);
       box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
     }
@@ -350,6 +364,32 @@
       transform: translateY(-3px);
     }
 
+    .inventory-card {
+      background-color: #3c4758;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .inventory-card:hover {
+      background-color: #4a5568;
+      transform: translateY(-3px);
+    }
+
+    .workflow-card {
+      background-color: #3c4758;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .workflow-card:hover {
+      background-color: #4a5568;
+      transform: translateY(-3px);
+    }
+
     .search-box {
       width: 100%;
       padding: 12px 15px;
@@ -359,6 +399,103 @@
       background-color: #3c4758;
       color: white;
       font-size: 1rem;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-left: 8px;
+    }
+
+    .status-pending {
+      background-color: #FF9800;
+      color: #fff;
+    }
+
+    .status-in-progress {
+      background-color: #2196F3;
+      color: #fff;
+    }
+
+    .status-completed {
+      background-color: #4CAF50;
+      color: #fff;
+    }
+
+    .status-delivered {
+      background-color: #9C27B0;
+      color: #fff;
+    }
+
+    .status-paid {
+      background-color: #607D8B;
+      color: #fff;
+    }
+
+    .alert-banner {
+      background-color: #f44336;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(244, 67, 54, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0); }
+    }
+
+    .alert-banner.warning {
+      background-color: #FF9800;
+    }
+
+    .alert-banner.info {
+      background-color: #2196F3;
+    }
+
+    .history-item-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .history-item-buttons button {
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn-edit {
+      background-color: #2196F3;
+      color: white;
+    }
+
+    .btn-delete {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .payment-section {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #3c4758;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .payment-section.active {
+      display: block;
     }
 
     @media (max-width: 600px) {
@@ -401,7 +538,10 @@
   <div style="text-align:right; margin-bottom:15px;">
     <button class="btn-lang" onclick="toggleLang()" id="btn-lang">Toggle Language</button>
     <button class="btn-dashboard" onclick="openDashboard()" id="btn-dashboard">Dashboard</button>
+    <button class="btn-workflow" onclick="openWorkflow()" id="btn-workflow">Flujo de Trabajo</button>
   </div>
+
+  <div id="alerts-container"></div>
 
   <div class="invoice-header">
     <div>
@@ -412,6 +552,29 @@
     <div>
       <label for="invoiceNumber" id="lbl-invoice-number">Número de Factura</label>
       <input type="text" id="invoiceNumber" readonly />
+    </div>
+    <div>
+      <label for="status" id="lbl-status">Estado del Pedido</label>
+      <select id="status" onchange="togglePaymentSection()">
+        <option value="pending">Pendiente</option>
+        <option value="in-progress">En Progreso</option>
+        <option value="completed">Completado</option>
+        <option value="delivered">Entregado</option>
+        <option value="paid">Pagado</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="payment-section" class="payment-section">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <div>
+        <label for="amountPaid" id="lbl-amount-paid">Monto Abonado (RD$)</label>
+        <input type="number" id="amountPaid" value="0" min="0" />
+      </div>
+      <div>
+        <label for="remainingBalance" id="lbl-remaining-balance">Saldo Pendiente (RD$)</label>
+        <input type="number" id="remainingBalance" value="0" readonly />
+      </div>
     </div>
   </div>
 
@@ -489,6 +652,7 @@
     <button class="btn-save" onclick="saveToHistory()" id="btn-save">Guardar en Historial</button>
     <button class="btn-clear" onclick="clearForm()" id="btn-clear">Limpiar Formulario</button>
     <button class="btn-template" onclick="saveTemplate()" id="btn-template">Guardar Plantilla</button>
+    <button class="btn-payment" onclick="markAsPaid()" id="btn-payment">Marcar como Pagado</button>
   </div>
 
   <div class="history" id="history-section">
@@ -507,6 +671,8 @@
       <button class="tab active" onclick="openTab(event, 'stats-tab')" id="tab-stats">Estadísticas</button>
       <button class="tab" onclick="openTab(event, 'customers-tab')" id="tab-customers">Clientes</button>
       <button class="tab" onclick="openTab(event, 'templates-tab')" id="tab-templates">Plantillas</button>
+      <button class="tab" onclick="openTab(event, 'inventory-tab')" id="tab-inventory">Inventario</button>
+      <button class="tab" onclick="openTab(event, 'reports-tab')" id="tab-reports">Reportes</button>
     </div>
     
     <div id="stats-tab" class="tab-content active">
@@ -539,6 +705,88 @@
       <input type="text" id="templateSearch" class="search-box" placeholder="Buscar plantillas..." oninput="searchTemplates()" />
       <div id="templates-list"></div>
     </div>
+    
+    <div id="inventory-tab" class="tab-content">
+      <h3 id="lbl-inventory">Inventario de Filamento</h3>
+      <div id="inventory-list"></div>
+      
+      <h3 style="margin-top: 30px;" id="lbl-add-inventory">Agregar al Inventario</h3>
+      <form id="inventory-form">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div>
+            <label for="inv-filament-type" id="lbl-inv-filament-type">Tipo de Filamento</label>
+            <select id="inv-filament-type">
+              <option value="PLA">PLA</option>
+              <option value="PETG">PETG</option>
+              <option value="ABS">ABS</option>
+              <option value="ASA">ASA</option>
+              <option value="Otro">Otro</option>
+            </select>
+            
+            <label for="inv-color" id="lbl-inv-color">Color</label>
+            <input type="text" id="inv-color" placeholder="Ej: Negro, Blanco, etc." />
+          </div>
+          <div>
+            <label for="inv-quantity" id="lbl-inv-quantity">Cantidad (kg)</label>
+            <input type="number" step="0.01" id="inv-quantity" value="1.00" />
+            
+            <label for="inv-price" id="lbl-inv-price">Precio por kg (RD$)</label>
+            <input type="number" id="inv-price" value="1600" />
+          </div>
+        </div>
+        <button type="button" class="btn-save" style="margin-top: 15px;" onclick="addToInventory()" id="btn-add-inventory">Agregar al Inventario</button>
+      </form>
+    </div>
+    
+    <div id="reports-tab" class="tab-content">
+      <h3 id="lbl-pending-payments">Pagos Pendientes</h3>
+      <div id="pending-payments-list"></div>
+      
+      <h3 style="margin-top: 30px;" id="lbl-financial-summary">Resumen Financiero</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="results">
+          <div><span id="lbl-total-sales">Ventas Totales:</span> <span>RD$<span id="total-sales">0.00</span></span></div>
+          <div><span id="lbl-total-pending">Total Pendiente:</span> <span>RD$<span id="total-pending">0.00</span></span></div>
+          <div><span id="lbl-total-costs">Costos Totales:</span> <span>RD$<span id="total-costs">0.00</span></span></div>
+        </div>
+        <div class="results">
+          <div><span id="lbl-total-profit">Ganancias Totales:</span> <span>RD$<span id="total-profit">0.00</span></span></div>
+          <div><span id="lbl-avg-margin">Margen Promedio:</span> <span><span id="avg-margin">0</span>%</span></div>
+          <div><span id="lbl-total-invoices">Facturas Totales:</span> <span><span id="total-invoices">0</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Workflow -->
+<div id="workflowModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('workflowModal')">&times;</span>
+    <h2 id="lbl-workflow-title">Flujo de Trabajo</h2>
+    
+    <div class="tabs">
+      <button class="tab active" onclick="openWorkflowTab(event, 'pending-tab')" id="tab-pending">Pendientes</button>
+      <button class="tab" onclick="openWorkflowTab(event, 'progress-tab')" id="tab-progress">En Progreso</button>
+      <button class="tab" onclick="openWorkflowTab(event, 'completed-tab')" id="tab-completed">Completados</button>
+      <button class="tab" onclick="openWorkflowTab(event, 'delivered-tab')" id="tab-delivered">Entregados</button>
+    </div>
+    
+    <div id="pending-tab" class="tab-content active">
+      <div id="pending-list" style="max-height: 500px; overflow-y: auto;"></div>
+    </div>
+    
+    <div id="progress-tab" class="tab-content">
+      <div id="progress-list" style="max-height: 500px; overflow-y: auto;"></div>
+    </div>
+    
+    <div id="completed-tab" class="tab-content">
+      <div id="completed-list" style="max-height: 500px; overflow-y: auto;"></div>
+    </div>
+    
+    <div id="delivered-tab" class="tab-content">
+      <div id="delivered-list" style="max-height: 500px; overflow-y: auto;"></div>
+    </div>
   </div>
 </div>
 
@@ -558,6 +806,12 @@
   // Inicializar Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
+
+  // Variables globales
+  let currentInvoiceId = null; // Para almacenar el ID de la factura actualmente cargada
+  let currentLang = navigator.language.startsWith('es') ? 'es' : 'en';
+  let monthlyProfitChart = null;
+  let filamentUsageChart = null;
 
   // Generar número de factura único
   function generateInvoiceNumber() {
@@ -580,6 +834,7 @@
       "app-title": "Factura",
       "lbl-customer-name": "Nombre del Cliente",
       "lbl-invoice-number": "Número de Factura",
+      "lbl-status": "Estado del Pedido",
       "lbl-electricity-price": "Precio de la electricidad (RD$/kWh)",
       "lbl-print-hours": "Horas de impresión",
       "lbl-weight": "Peso del modelo (g)",
@@ -611,6 +866,8 @@
       "btn-lang": "Cambiar Idioma",
       "btn-dashboard": "Dashboard",
       "btn-template": "Guardar Plantilla",
+      "btn-payment": "Marcar como Pagado",
+      "btn-workflow": "Flujo de Trabajo",
       "lbl-history": "Historial de Impresiones",
       "lbl-admin-results": "Resultados (Administrador)",
       "lbl-customer-results": "Detalles de la Factura (Cliente)",
@@ -618,16 +875,51 @@
       "lbl-monthly-profit": "Ganancias Mensuales",
       "lbl-filament-usage": "Uso de Filamento",
       "lbl-recent-activity": "Actividad Reciente",
+      "lbl-inventory": "Inventario de Filamento",
+      "lbl-add-inventory": "Agregar al Inventario",
+      "lbl-inv-filament-type": "Tipo de Filamento",
+      "lbl-inv-color": "Color",
+      "lbl-inv-quantity": "Cantidad (kg)",
+      "lbl-inv-price": "Precio por kg (RD$)",
+      "btn-add-inventory": "Agregar al Inventario",
+      "lbl-pending-payments": "Pagos Pendientes",
+      "lbl-financial-summary": "Resumen Financiero",
+      "lbl-total-sales": "Ventas Totales:",
+      "lbl-total-pending": "Total Pendiente:",
+      "lbl-total-costs": "Costos Totales:",
+      "lbl-total-profit": "Ganancias Totales:",
+      "lbl-avg-margin": "Margen Promedio:",
+      "lbl-total-invoices": "Facturas Totales:",
+      "lbl-workflow-title": "Flujo de Trabajo",
       "tab-stats": "Estadísticas",
       "tab-customers": "Clientes",
       "tab-templates": "Plantillas",
+      "tab-inventory": "Inventario",
+      "tab-reports": "Reportes",
+      "tab-pending": "Pendientes",
+      "tab-progress": "En Progreso",
+      "tab-completed": "Completados",
+      "tab-delivered": "Entregados",
       "customer-search-placeholder": "Buscar clientes...",
-      "template-search-placeholder": "Buscar plantillas..."
+      "template-search-placeholder": "Buscar plantillas...",
+      "status-pending": "Pendiente",
+      "status-in-progress": "En Progreso",
+      "status-completed": "Completado",
+      "status-delivered": "Entregado",
+      "status-paid": "Pagado",
+      "btn-edit": "Editar",
+      "btn-delete": "Eliminar",
+      "confirm-delete": "¿Estás seguro de que quieres eliminar esta factura?",
+      "invoice-updated": "Factura actualizada correctamente",
+      "invoice-deleted": "Factura eliminada correctamente",
+      "lbl-amount-paid": "Monto Abonado (RD$)",
+      "lbl-remaining-balance": "Saldo Pendiente (RD$)"
     },
     en: {
       "app-title": "Invoice",
       "lbl-customer-name": "Customer Name",
       "lbl-invoice-number": "Invoice Number",
+      "lbl-status": "Order Status",
       "lbl-electricity-price": "Electricity Price (RD$/kWh)",
       "lbl-print-hours": "Print Hours",
       "lbl-weight": "Model Weight (g)",
@@ -659,6 +951,8 @@
       "btn-lang": "Toggle Language",
       "btn-dashboard": "Dashboard",
       "btn-template": "Save Template",
+      "btn-payment": "Mark as Paid",
+      "btn-workflow": "Workflow",
       "lbl-history": "Print History",
       "lbl-admin-results": "Results (Admin)",
       "lbl-customer-results": "Invoice Details (Customer)",
@@ -666,17 +960,47 @@
       "lbl-monthly-profit": "Monthly Profits",
       "lbl-filament-usage": "Filament Usage",
       "lbl-recent-activity": "Recent Activity",
+      "lbl-inventory": "Filament Inventory",
+      "lbl-add-inventory": "Add to Inventory",
+      "lbl-inv-filament-type": "Filament Type",
+      "lbl-inv-color": "Color",
+      "lbl-inv-quantity": "Quantity (kg)",
+      "lbl-inv-price": "Price per kg (RD$)",
+      "btn-add-inventory": "Add to Inventory",
+      "lbl-pending-payments": "Pending Payments",
+      "lbl-financial-summary": "Financial Summary",
+      "lbl-total-sales": "Total Sales:",
+      "lbl-total-pending": "Total Pending:",
+      "lbl-total-costs": "Total Costs:",
+      "lbl-total-profit": "Total Profit:",
+      "lbl-avg-margin": "Average Margin:",
+      "lbl-total-invoices": "Total Invoices:",
+      "lbl-workflow-title": "Workflow",
       "tab-stats": "Statistics",
       "tab-customers": "Customers",
       "tab-templates": "Templates",
+      "tab-inventory": "Inventory",
+      "tab-reports": "Reports",
+      "tab-pending": "Pending",
+      "tab-progress": "In Progress",
+      "tab-completed": "Completed",
+      "tab-delivered": "Delivered",
       "customer-search-placeholder": "Search customers...",
-      "template-search-placeholder": "Search templates..."
+      "template-search-placeholder": "Search templates...",
+      "status-pending": "Pending",
+      "status-in-progress": "In Progress",
+      "status-completed": "Completed",
+      "status-delivered": "Delivered",
+      "status-paid": "Paid",
+      "btn-edit": "Edit",
+      "btn-delete": "Delete",
+      "confirm-delete": "Are you sure you want to delete this invoice?",
+      "invoice-updated": "Invoice updated successfully",
+      "invoice-deleted": "Invoice deleted successfully",
+      "lbl-amount-paid": "Amount Paid (RD$)",
+      "lbl-remaining-balance": "Remaining Balance (RD$)"
     }
   };
-
-  let currentLang = navigator.language.startsWith('es') ? 'es' : 'en';
-  let monthlyProfitChart = null;
-  let filamentUsageChart = null;
 
   function translatePage() {
     Object.keys(translations[currentLang]).forEach(key => {
@@ -699,6 +1023,28 @@
     currentLang = currentLang === 'es' ? 'en' : 'es';
     translatePage();
     calculateResults();
+  }
+
+  // Mostrar/ocultar sección de pagos según estado
+  function togglePaymentSection() {
+    const status = document.getElementById("status").value;
+    const paymentSection = document.getElementById("payment-section");
+    
+    if (status === "pending") {
+      paymentSection.classList.add("active");
+      updateRemainingBalance();
+    } else {
+      paymentSection.classList.remove("active");
+    }
+  }
+
+  // Actualizar saldo pendiente
+  function updateRemainingBalance() {
+    const suggestedPrice = parseFloat(document.getElementById("suggestedPrice").textContent) || 0;
+    const amountPaid = parseFloat(document.getElementById("amountPaid").value) || 0;
+    const remainingBalance = suggestedPrice - amountPaid;
+    
+    document.getElementById("remainingBalance").value = remainingBalance.toFixed(2);
   }
 
   // Cálculos
@@ -763,6 +1109,11 @@
     results.customerPrintingCost.textContent = adjustedPrintingCost.toFixed(2);
     results.customerServiceCost.textContent = adjustedServiceCost.toFixed(2);
     results.customerTotalPrice.textContent = suggestedPrice.toFixed(2);
+
+    // Actualizar saldo pendiente si la sección de pagos está visible
+    if (document.getElementById("payment-section").classList.contains("active")) {
+      updateRemainingBalance();
+    }
   }
 
   function exportToPDF() {
@@ -820,6 +1171,19 @@
     doc.text(`${lang["lbl-customer-printing-cost"]}: RD$${results.customerPrintingCost.textContent}`, 30, yPos);
     yPos += 10;
     doc.text(`${lang["lbl-customer-service-cost"]}: RD$${results.customerServiceCost.textContent}`, 30, yPos);
+    
+    // Mostrar información de pagos si está pendiente
+    const status = document.getElementById("status").value;
+    if (status === "pending") {
+      const amountPaid = parseFloat(document.getElementById("amountPaid").value) || 0;
+      const remainingBalance = parseFloat(document.getElementById("remainingBalance").value) || 0;
+      
+      yPos += 15;
+      doc.text(`${currentLang === 'es' ? 'Monto abonado:' : 'Amount paid:'}: RD$${amountPaid.toFixed(2)}`, 30, yPos);
+      yPos += 10;
+      doc.text(`${currentLang === 'es' ? 'Saldo pendiente:' : 'Remaining balance:'}: RD$${remainingBalance.toFixed(2)}`, 30, yPos);
+    }
+    
     yPos += 15;
     
     // Precio total
@@ -839,64 +1203,116 @@
   async function saveToHistory() {
     const customerName = document.getElementById("customerName").value || (currentLang === 'es' ? "Sin nombre" : "No name");
     const invoiceNumber = document.getElementById("invoiceNumber").value || generateInvoiceNumber();
+    const status = document.getElementById("status").value;
+    const amountPaid = parseFloat(document.getElementById("amountPaid").value) || 0;
     
-    // Guardar en Firestore
+    const invoiceData = {
+      date: new Date().toISOString(),
+      customerName: customerName,
+      invoiceNumber: invoiceNumber,
+      status: status,
+      electricityPrice: parseFloat(document.getElementById("electricityPrice").value) || 0,
+      printHours: parseFloat(document.getElementById("printHours").value) || 0,
+      weight: parseFloat(document.getElementById("weight").value) || 0,
+      filamentPrice: parseFloat(document.getElementById("filamentPrice").value) || 0,
+      filamentType: document.getElementById("filamentType").value,
+      laborCost: parseFloat(document.getElementById("laborCost").value) || 0,
+      otherCosts: parseFloat(document.getElementById("otherCosts").value) || 0,
+      maintenanceCost: parseFloat(document.getElementById("maintenanceCost").value) || 0,
+      printerDepreciation: parseFloat(document.getElementById("printerDepreciation").value) || 0,
+      margin: parseFloat(document.getElementById("margin").value) || 0,
+      totalCost: parseFloat(results.totalCost.textContent) || 0,
+      suggestedPrice: parseFloat(results.suggestedPrice.textContent) || 0,
+      exchangeRate: parseFloat(document.getElementById("exchangeRate").value) || 0,
+      paid: status === 'paid',
+      amountPaid: amountPaid,
+      remainingBalance: parseFloat(document.getElementById("remainingBalance").value) || 0
+    };
+    
     try {
-      const invoiceData = {
-        date: new Date().toISOString(),
-        customerName: customerName,
-        invoiceNumber: invoiceNumber,
-        electricityPrice: parseFloat(document.getElementById("electricityPrice").value) || 0,
-        printHours: parseFloat(document.getElementById("printHours").value) || 0,
-        weight: parseFloat(document.getElementById("weight").value) || 0,
-        filamentPrice: parseFloat(document.getElementById("filamentPrice").value) || 0,
-        filamentType: document.getElementById("filamentType").value,
-        laborCost: parseFloat(document.getElementById("laborCost").value) || 0,
-        otherCosts: parseFloat(document.getElementById("otherCosts").value) || 0,
-        maintenanceCost: parseFloat(document.getElementById("maintenanceCost").value) || 0,
-        printerDepreciation: parseFloat(document.getElementById("printerDepreciation").value) || 0,
-        margin: parseFloat(document.getElementById("margin").value) || 0,
-        totalCost: parseFloat(results.totalCost.textContent) || 0,
-        suggestedPrice: parseFloat(results.suggestedPrice.textContent) || 0,
-        exchangeRate: parseFloat(document.getElementById("exchangeRate").value) || 0
-      };
-      
-      // Guardar factura
-      await db.collection("invoices").add(invoiceData);
-      
-      // Actualizar o crear cliente
-      const customerQuery = await db.collection("customers").where("name", "==", customerName).get();
-      
-      if (customerQuery.empty) {
-        // Nuevo cliente
-        await db.collection("customers").add({
-          name: customerName,
-          totalSpent: parseFloat(results.suggestedPrice.textContent) || 0,
-          invoices: [invoiceNumber],
-          lastPurchase: new Date().toISOString(),
-          firstPurchase: new Date().toISOString()
-        });
+      if (currentInvoiceId) {
+        // Actualizar factura existente
+        await db.collection("invoices").doc(currentInvoiceId).update(invoiceData);
+        alert(translations[currentLang]["invoice-updated"]);
       } else {
-        // Cliente existente
-        const customerDoc = customerQuery.docs[0];
-        await db.collection("customers").doc(customerDoc.id).update({
-          totalSpent: customerDoc.data().totalSpent + parseFloat(results.suggestedPrice.textContent) || 0,
-          invoices: [...customerDoc.data().invoices, invoiceNumber],
-          lastPurchase: new Date().toISOString()
-        });
+        // Crear nueva factura
+        await db.collection("invoices").add(invoiceData);
+        
+        // Actualizar o crear cliente
+        const customerQuery = await db.collection("customers").where("name", "==", customerName).get();
+        
+        if (customerQuery.empty) {
+          // Nuevo cliente
+          await db.collection("customers").add({
+            name: customerName,
+            totalSpent: parseFloat(results.suggestedPrice.textContent) || 0,
+            invoices: [invoiceNumber],
+            lastPurchase: new Date().toISOString(),
+            firstPurchase: new Date().toISOString(),
+            pendingAmount: status === 'paid' ? 0 : parseFloat(results.suggestedPrice.textContent) - amountPaid || 0
+          });
+        } else {
+          // Cliente existente
+          const customerDoc = customerQuery.docs[0];
+          const customerData = customerDoc.data();
+          const pendingAmount = status === 'paid' ? 
+            0 : 
+            (customerData.pendingAmount || 0) + (parseFloat(results.suggestedPrice.textContent) - amountPaid) || 0;
+          
+          await db.collection("customers").doc(customerDoc.id).update({
+            totalSpent: (customerData.totalSpent || 0) + parseFloat(results.suggestedPrice.textContent) || 0,
+            invoices: [...(customerData.invoices || []), invoiceNumber],
+            lastPurchase: new Date().toISOString(),
+            pendingAmount: pendingAmount
+          });
+        }
+        
+        // Actualizar inventario si el estado no es "pending"
+        if (status !== 'pending') {
+          await updateInventory(parseFloat(document.getElementById("weight").value) || 0, document.getElementById("filamentType").value);
+        }
+        
+        alert(currentLang === 'es' ? 'Factura guardada con éxito!' : 'Invoice saved successfully!');
       }
-      
-      // Mostrar notificación
-      alert(currentLang === 'es' ? 'Factura guardada con éxito!' : 'Invoice saved successfully!');
       
       // Generar nuevo número de factura para el próximo
       document.getElementById('invoiceNumber').value = generateInvoiceNumber();
+      currentInvoiceId = null; // Resetear el ID de factura actual
       
-      // Actualizar historial
+      // Actualizar historial y alertas
       renderHistory();
+      checkAlerts();
     } catch (error) {
       console.error("Error saving invoice:", error);
       alert(currentLang === 'es' ? 'Error al guardar la factura' : 'Error saving invoice');
+    }
+  }
+
+  async function updateInventory(weightGrams, filamentType) {
+    try {
+      const weightKg = weightGrams / 1000;
+      const filamentName = getFilamentTypeName(filamentType);
+      
+      const inventoryQuery = await db.collection("inventory")
+        .where("type", "==", filamentName)
+        .orderBy("date", "desc")
+        .limit(1)
+        .get();
+      
+      if (!inventoryQuery.empty) {
+        const lastInventory = inventoryQuery.docs[0].data();
+        const newQuantity = lastInventory.remaining - weightKg;
+        
+        if (newQuantity >= 0) {
+          await db.collection("inventory").doc(inventoryQuery.docs[0].id).update({
+            remaining: newQuantity
+          });
+        } else {
+          console.warn("No hay suficiente filamento en inventario");
+        }
+      }
+    } catch (error) {
+      console.error("Error updating inventory:", error);
     }
   }
 
@@ -919,8 +1335,15 @@
         const item = doc.data();
         const div = document.createElement("div");
         div.className = "history-item";
+        
+        let paymentInfo = "";
+        if (item.status === "pending" && item.amountPaid > 0) {
+          paymentInfo = `<div><small>${currentLang === 'es' ? 'Abonado:' : 'Paid:'} RD$${item.amountPaid.toFixed(2)} (${currentLang === 'es' ? 'Saldo:' : 'Balance:'} RD$${item.remainingBalance.toFixed(2)})</small></div>`;
+        }
+        
         div.innerHTML = `
-          <strong>${new Date(item.date).toLocaleString()}</strong><br>
+          <strong>${new Date(item.date).toLocaleString()}</strong>
+          <span class="status-badge ${getStatusClass(item.status)}">${getStatusText(item.status)}</span><br>
           <div style="display:flex; justify-content:space-between; margin-top:8px;">
             <div>
               <strong>${currentLang === 'es' ? 'Cliente' : 'Customer'}:</strong> ${item.customerName}<br>
@@ -930,8 +1353,12 @@
               <strong>${currentLang === 'es' ? 'Total' : 'Total'}:</strong> RD$${item.suggestedPrice.toFixed(2)}
             </div>
           </div>
+          ${paymentInfo}
+          <div class="history-item-buttons">
+            <button class="btn-edit" onclick="editInvoiceFromHistory(event, '${doc.id}')">${translations[currentLang]["btn-edit"]}</button>
+            <button class="btn-delete" onclick="deleteInvoiceFromHistory(event, '${doc.id}')">${translations[currentLang]["btn-delete"]}</button>
+          </div>
         `;
-        div.addEventListener("click", () => loadInvoiceFromHistory(doc.id, item));
         list.appendChild(div);
       });
     } catch (error) {
@@ -940,22 +1367,119 @@
     }
   }
 
-  function loadInvoiceFromHistory(docId, data) {
-    document.getElementById("customerName").value = data.customerName;
-    document.getElementById("electricityPrice").value = data.electricityPrice;
-    document.getElementById("printHours").value = data.printHours;
-    document.getElementById("weight").value = data.weight;
-    document.getElementById("filamentPrice").value = data.filamentPrice;
-    document.getElementById("filamentType").value = data.filamentType || "1600";
-    document.getElementById("laborCost").value = data.laborCost;
-    document.getElementById("otherCosts").value = data.otherCosts;
-    document.getElementById("maintenanceCost").value = data.maintenanceCost || 0;
-    document.getElementById("printerDepreciation").value = data.printerDepreciation || 14.00;
-    document.getElementById("margin").value = data.margin;
-    document.getElementById("exchangeRate").value = data.exchangeRate || 58.00;
-    document.getElementById("invoiceNumber").value = data.invoiceNumber;
+  function getStatusClass(status) {
+    switch(status) {
+      case 'pending': return 'status-pending';
+      case 'in-progress': return 'status-in-progress';
+      case 'completed': return 'status-completed';
+      case 'delivered': return 'status-delivered';
+      case 'paid': return 'status-paid';
+      default: return '';
+    }
+  }
+
+  function getStatusText(status) {
+    return translations[currentLang][`status-${status}`] || status;
+  }
+
+  function editInvoiceFromHistory(event, docId) {
+    event.stopPropagation(); // Evitar que el evento se propague al div padre
+    loadInvoiceFromHistory(docId);
+  }
+
+  async function deleteInvoiceFromHistory(event, docId) {
+    event.stopPropagation(); // Evitar que el evento se propague al div padre
     
-    calculateResults();
+    if (!confirm(translations[currentLang]["confirm-delete"])) {
+      return;
+    }
+    
+    try {
+      // Obtener la factura antes de eliminarla para actualizar el cliente
+      const invoiceDoc = await db.collection("invoices").doc(docId).get();
+      const invoiceData = invoiceDoc.data();
+      
+      // Eliminar la factura
+      await db.collection("invoices").doc(docId).delete();
+      
+      // Actualizar el cliente si existe
+      const customerQuery = await db.collection("customers")
+        .where("name", "==", invoiceData.customerName)
+        .limit(1)
+        .get();
+      
+      if (!customerQuery.empty) {
+        const customerDoc = customerQuery.docs[0];
+        const customerData = customerDoc.data();
+        
+        // Actualizar el total gastado y las facturas del cliente
+        const newTotalSpent = (customerData.totalSpent || 0) - (invoiceData.suggestedPrice || 0);
+        const newInvoices = (customerData.invoices || []).filter(inv => inv !== invoiceData.invoiceNumber);
+        
+        // Actualizar el monto pendiente si la factura no estaba pagada
+        const newPendingAmount = invoiceData.paid ? 
+          customerData.pendingAmount : 
+          (customerData.pendingAmount || 0) - (invoiceData.suggestedPrice - (invoiceData.amountPaid || 0));
+        
+        await db.collection("customers").doc(customerDoc.id).update({
+          totalSpent: Math.max(0, newTotalSpent),
+          invoices: newInvoices,
+          pendingAmount: Math.max(0, newPendingAmount)
+        });
+      }
+      
+      alert(translations[currentLang]["invoice-deleted"]);
+      renderHistory();
+      checkAlerts();
+      
+      // Si la factura eliminada es la que está actualmente cargada, limpiar el formulario
+      if (currentInvoiceId === docId) {
+        clearForm();
+      }
+    } catch (error) {
+      console.error("Error deleting invoice:", error);
+      alert(currentLang === 'es' ? 'Error al eliminar la factura' : 'Error deleting invoice');
+    }
+  }
+
+  async function loadInvoiceFromHistory(docId) {
+    try {
+      const doc = await db.collection("invoices").doc(docId).get();
+      if (doc.exists) {
+        const data = doc.data();
+        
+        // Guardar el ID de la factura actual
+        currentInvoiceId = docId;
+        
+        // Cargar los datos en el formulario
+        document.getElementById("customerName").value = data.customerName;
+        document.getElementById("electricityPrice").value = data.electricityPrice;
+        document.getElementById("printHours").value = data.printHours;
+        document.getElementById("weight").value = data.weight;
+        document.getElementById("filamentPrice").value = data.filamentPrice;
+        document.getElementById("filamentType").value = data.filamentType || "1600";
+        document.getElementById("laborCost").value = data.laborCost;
+        document.getElementById("otherCosts").value = data.otherCosts;
+        document.getElementById("maintenanceCost").value = data.maintenanceCost || 0;
+        document.getElementById("printerDepreciation").value = data.printerDepreciation || 14.00;
+        document.getElementById("margin").value = data.margin;
+        document.getElementById("exchangeRate").value = data.exchangeRate || 58.00;
+        document.getElementById("invoiceNumber").value = data.invoiceNumber;
+        document.getElementById("status").value = data.status || "pending";
+        document.getElementById("amountPaid").value = data.amountPaid || 0;
+        document.getElementById("remainingBalance").value = data.remainingBalance || 0;
+        
+        // Mostrar/ocultar sección de pagos según estado
+        togglePaymentSection();
+        
+        calculateResults();
+        
+        // Cambiar el texto del botón de guardar
+        document.getElementById("btn-save").textContent = currentLang === 'es' ? 'Actualizar Factura' : 'Update Invoice';
+      }
+    } catch (error) {
+      console.error("Error loading invoice:", error);
+    }
   }
 
   function clearForm() {
@@ -971,17 +1495,109 @@
     document.getElementById("printerDepreciation").value = "14.00";
     document.getElementById("margin").value = "40";
     document.getElementById("exchangeRate").value = "58.00";
+    document.getElementById("status").value = "pending";
+    document.getElementById("amountPaid").value = "0";
+    document.getElementById("remainingBalance").value = "0";
     document.getElementById('invoiceNumber').value = generateInvoiceNumber();
     calculateResults();
     
+    // Ocultar sección de pagos
+    document.getElementById("payment-section").classList.remove("active");
+    
+    // Restablecer el botón de guardar
+    document.getElementById("btn-save").textContent = translations[currentLang]["btn-save"];
+    
+    // Limpiar el ID de la factura actual
+    currentInvoiceId = null;
+    
     // Mostrar notificación
     alert(currentLang === 'es' ? 'Formulario limpiado!' : 'Form cleared!');
+  }
+
+  async function markAsPaid() {
+    const customerName = document.getElementById("customerName").value;
+    const invoiceNumber = document.getElementById("invoiceNumber").value;
+    
+    if (!customerName || !invoiceNumber) {
+      alert(currentLang === 'es' ? 'Por favor complete los datos del cliente y número de factura' : 'Please fill in customer name and invoice number');
+      return;
+    }
+    
+    try {
+      let invoiceDoc;
+      
+      if (currentInvoiceId) {
+        // Actualizar factura existente
+        invoiceDoc = await db.collection("invoices").doc(currentInvoiceId).get();
+        await db.collection("invoices").doc(currentInvoiceId).update({
+          status: 'paid',
+          paid: true,
+          amountPaid: parseFloat(results.suggestedPrice.textContent) || 0,
+          remainingBalance: 0
+        });
+      } else {
+        // Buscar la factura en Firestore
+        const invoiceQuery = await db.collection("invoices")
+          .where("invoiceNumber", "==", invoiceNumber)
+          .limit(1)
+          .get();
+        
+        if (invoiceQuery.empty) {
+          alert(currentLang === 'es' ? 'No se encontró la factura' : 'Invoice not found');
+          return;
+        }
+        
+        invoiceDoc = invoiceQuery.docs[0];
+        await db.collection("invoices").doc(invoiceDoc.id).update({
+          status: 'paid',
+          paid: true,
+          amountPaid: parseFloat(results.suggestedPrice.textContent) || 0,
+          remainingBalance: 0
+        });
+      }
+      
+      // Actualizar el cliente para reducir el monto pendiente
+      const customerQuery = await db.collection("customers")
+        .where("name", "==", customerName)
+        .limit(1)
+        .get();
+      
+      if (!customerQuery.empty) {
+        const customerDoc = customerQuery.docs[0];
+        const customerData = customerDoc.data();
+        const invoiceData = invoiceDoc.data();
+        const pendingAmount = (customerData.pendingAmount || 0) - (parseFloat(results.suggestedPrice.textContent) - (invoiceData.amountPaid || 0)) || 0;
+        
+        await db.collection("customers").doc(customerDoc.id).update({
+          pendingAmount: Math.max(0, pendingAmount)
+        });
+      }
+      
+      // Actualizar estado en el formulario
+      document.getElementById("status").value = "paid";
+      document.getElementById("amountPaid").value = parseFloat(results.suggestedPrice.textContent) || 0;
+      document.getElementById("remainingBalance").value = 0;
+      
+      // Ocultar sección de pagos
+      document.getElementById("payment-section").classList.remove("active");
+      
+      alert(currentLang === 'es' ? 'Factura marcada como pagada!' : 'Invoice marked as paid!');
+      checkAlerts();
+    } catch (error) {
+      console.error("Error marking as paid:", error);
+      alert(currentLang === 'es' ? 'Error al marcar como pagada' : 'Error marking as paid');
+    }
   }
 
   // Funciones del Dashboard
   function openDashboard() {
     document.getElementById("dashboardModal").style.display = "block";
     loadDashboardData();
+  }
+
+  function openWorkflow() {
+    document.getElementById("workflowModal").style.display = "block";
+    loadWorkflowData();
   }
 
   function closeModal(modalId) {
@@ -995,6 +1611,21 @@
     }
     
     const tabs = document.getElementsByClassName("tab");
+    for (let i = 0; i < tabs.length; i++) {
+      tabs[i].classList.remove("active");
+    }
+    
+    document.getElementById(tabName).classList.add("active");
+    evt.currentTarget.classList.add("active");
+  }
+
+  function openWorkflowTab(evt, tabName) {
+    const tabContents = document.querySelectorAll("#workflowModal .tab-content");
+    for (let i = 0; i < tabContents.length; i++) {
+      tabContents[i].classList.remove("active");
+    }
+    
+    const tabs = document.querySelectorAll("#workflowModal .tab");
     for (let i = 0; i < tabs.length; i++) {
       tabs[i].classList.remove("active");
     }
@@ -1019,10 +1650,15 @@
         .orderBy("name")
         .get();
       
+      const inventorySnapshot = await db.collection("inventory")
+        .orderBy("date", "desc")
+        .get();
+      
       // Procesar datos para gráficos
       const invoicesData = invoicesSnapshot.docs.map(doc => doc.data());
       const customersData = customersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       const templatesData = templatesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const inventoryData = inventorySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       
       // Actualizar pestaña de clientes
       renderCustomersList(customersData);
@@ -1030,8 +1666,14 @@
       // Actualizar pestaña de plantillas
       renderTemplatesList(templatesData);
       
+      // Actualizar pestaña de inventario
+      renderInventoryList(inventoryData);
+      
       // Actualizar actividad reciente
       renderRecentActivity(invoicesData);
+      
+      // Actualizar reportes financieros
+      renderFinancialReports(invoicesData, customersData);
       
       // Crear gráficos
       createMonthlyProfitChart(invoicesData);
@@ -1039,6 +1681,166 @@
       
     } catch (error) {
       console.error("Error loading dashboard data:", error);
+    }
+  }
+
+  async function loadWorkflowData() {
+    try {
+      const pendingQuery = await db.collection("invoices")
+        .where("status", "==", "pending")
+        .orderBy("date", "desc")
+        .get();
+      
+      const progressQuery = await db.collection("invoices")
+        .where("status", "==", "in-progress")
+        .orderBy("date", "desc")
+        .get();
+      
+      const completedQuery = await db.collection("invoices")
+        .where("status", "==", "completed")
+        .orderBy("date", "desc")
+        .get();
+      
+      const deliveredQuery = await db.collection("invoices")
+        .where("status", "==", "delivered")
+        .orderBy("date", "desc")
+        .get();
+      
+      const pendingData = pendingQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const progressData = progressQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const completedData = completedQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const deliveredData = deliveredQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      renderWorkflowList("pending-list", pendingData);
+      renderWorkflowList("progress-list", progressData);
+      renderWorkflowList("completed-list", completedData);
+      renderWorkflowList("delivered-list", deliveredData);
+      
+    } catch (error) {
+      console.error("Error loading workflow data:", error);
+    }
+  }
+
+  function renderWorkflowList(listId, items) {
+    const list = document.getElementById(listId);
+    list.innerHTML = "";
+    
+    if (items.length === 0) {
+      list.innerHTML = `<div style="text-align:center; padding:20px; color:#a0aec0;">${currentLang === 'es' ? 'No hay elementos' : 'No items'}</div>`;
+      return;
+    }
+    
+    items.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "workflow-card";
+      
+      let paymentInfo = "";
+      if (item.status === "pending" && item.amountPaid > 0) {
+        paymentInfo = `<div><small>${currentLang === 'es' ? 'Abonado:' : 'Paid:'} RD$${item.amountPaid.toFixed(2)} (${currentLang === 'es' ? 'Saldo:' : 'Balance:'} RD$${item.remainingBalance.toFixed(2)})</small></div>`;
+      }
+      
+      div.innerHTML = `
+        <div style="display: flex; justify-content: space-between;">
+          <div>
+            <strong>${item.customerName}</strong><br>
+            <small>${item.invoiceNumber}</small>
+          </div>
+          <div style="text-align: right;">
+            <strong>RD$${item.suggestedPrice.toFixed(2)}</strong><br>
+            <small>${new Date(item.date).toLocaleDateString()}</small>
+          </div>
+        </div>
+        ${paymentInfo}
+        <div style="margin-top: 10px; display: flex; justify-content: space-between;">
+          <button class="btn-save" style="padding: 5px 10px; font-size: 0.8rem;" onclick="updateWorkflowStatus('${item.id}', '${getNextStatus(item.status)}')">
+            ${getNextStatusText(item.status)}
+          </button>
+          <button class="btn-export" style="padding: 5px 10px; font-size: 0.8rem;" onclick="loadWorkflowItem('${item.id}')">
+            ${currentLang === 'es' ? 'Ver' : 'View'}
+          </button>
+        </div>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  function getNextStatus(currentStatus) {
+    switch(currentStatus) {
+      case 'pending': return 'in-progress';
+      case 'in-progress': return 'completed';
+      case 'completed': return 'delivered';
+      case 'delivered': return 'paid';
+      default: return 'paid';
+    }
+  }
+
+  function getNextStatusText(currentStatus) {
+    switch(currentStatus) {
+      case 'pending': return currentLang === 'es' ? 'Iniciar Proceso' : 'Start Process';
+      case 'in-progress': return currentLang === 'es' ? 'Marcar Completado' : 'Mark Completed';
+      case 'completed': return currentLang === 'es' ? 'Marcar Entregado' : 'Mark Delivered';
+      case 'delivered': return currentLang === 'es' ? 'Marcar Pagado' : 'Mark Paid';
+      default: return currentLang === 'es' ? 'Siguiente' : 'Next';
+    }
+  }
+
+  async function updateWorkflowStatus(docId, newStatus) {
+    try {
+      const updateData = {
+        status: newStatus,
+        paid: newStatus === 'paid'
+      };
+      
+      if (newStatus === 'paid') {
+        const invoiceDoc = await db.collection("invoices").doc(docId).get();
+        const invoiceData = invoiceDoc.data();
+        
+        updateData.amountPaid = invoiceData.suggestedPrice;
+        updateData.remainingBalance = 0;
+      }
+      
+      await db.collection("invoices").doc(docId).update(updateData);
+      
+      if (newStatus === 'paid') {
+        // Actualizar el monto pendiente del cliente
+        const invoiceDoc = await db.collection("invoices").doc(docId).get();
+        const invoiceData = invoiceDoc.data();
+        
+        const customerQuery = await db.collection("customers")
+          .where("name", "==", invoiceData.customerName)
+          .limit(1)
+          .get();
+        
+        if (!customerQuery.empty) {
+          const customerDoc = customerQuery.docs[0];
+          const customerData = customerDoc.data();
+          const pendingAmount = (customerData.pendingAmount || 0) - (invoiceData.suggestedPrice - (invoiceData.amountPaid || 0));
+          
+          await db.collection("customers").doc(customerDoc.id).update({
+            pendingAmount: Math.max(0, pendingAmount)
+          });
+        }
+      }
+      
+      alert(currentLang === 'es' ? 'Estado actualizado correctamente' : 'Status updated successfully');
+      loadWorkflowData();
+      checkAlerts();
+    } catch (error) {
+      console.error("Error updating status:", error);
+      alert(currentLang === 'es' ? 'Error al actualizar el estado' : 'Error updating status');
+    }
+  }
+
+  async function loadWorkflowItem(docId) {
+    try {
+      const doc = await db.collection("invoices").doc(docId).get();
+      if (doc.exists) {
+        const data = doc.data();
+        loadInvoiceFromHistory(docId, data);
+        closeModal("workflowModal");
+      }
+    } catch (error) {
+      console.error("Error loading workflow item:", error);
     }
   }
 
@@ -1058,8 +1860,9 @@
         <h3>${customer.name}</h3>
         <div style="display: flex; justify-content: space-between; margin-top: 10px;">
           <div>
-            <strong>${currentLang === 'es' ? 'Total gastado:' : 'Total spent:'}</strong> RD$${customer.totalSpent.toFixed(2)}<br>
-            <strong>${currentLang === 'es' ? 'Facturas:' : 'Invoices:'}</strong> ${customer.invoices.length}
+            <strong>${currentLang === 'es' ? 'Total gastado:' : 'Total spent:'}</strong> RD$${customer.totalSpent?.toFixed(2) || '0.00'}<br>
+            <strong>${currentLang === 'es' ? 'Facturas:' : 'Invoices:'}</strong> ${customer.invoices?.length || 0}<br>
+            <strong>${currentLang === 'es' ? 'Pendiente:' : 'Pending:'}</strong> RD$${customer.pendingAmount?.toFixed(2) || '0.00'}
           </div>
           <div style="text-align: right;">
             <strong>${currentLang === 'es' ? 'Última compra:' : 'Last purchase:'}</strong><br>
@@ -1091,12 +1894,269 @@
         <h3>${template.name}</h3>
         <div style="margin-top: 10px;">
           <strong>${currentLang === 'es' ? 'Tipo de filamento:' : 'Filament type:'}</strong> ${getFilamentTypeName(template.filamentPrice)}<br>
-          <strong>${currentLang === 'es' ? 'Precio sugerido:' : 'Suggested price:'}</strong> RD$${template.suggestedPrice.toFixed(2)}
+          <strong>${currentLang === 'es' ? 'Precio sugerido:' : 'Suggested price:'}</strong> RD$${template.suggestedPrice?.toFixed(2) || '0.00'}
         </div>
       `;
       div.addEventListener("click", () => loadTemplate(template));
       list.appendChild(div);
     });
+  }
+
+  function renderInventoryList(inventory) {
+    const list = document.getElementById("inventory-list");
+    list.innerHTML = "";
+    
+    if (inventory.length === 0) {
+      list.innerHTML = `<div style="text-align:center; padding:20px; color:#a0aec0;">${currentLang === 'es' ? 'No hay registros de inventario' : 'No inventory records'}</div>`;
+      return;
+    }
+    
+    // Agrupar por tipo y color
+    const groupedInventory = {};
+    inventory.forEach(item => {
+      const key = `${item.type}-${item.color}`;
+      if (!groupedInventory[key]) {
+        groupedInventory[key] = {
+          type: item.type,
+          color: item.color,
+          total: 0,
+          price: item.price,
+          lastUpdated: item.date
+        };
+      }
+      groupedInventory[key].total += item.remaining;
+    });
+    
+    // Convertir a array y ordenar
+    const inventoryArray = Object.values(groupedInventory).sort((a, b) => {
+      if (a.type < b.type) return -1;
+      if (a.type > b.type) return 1;
+      if (a.color < b.color) return -1;
+      if (a.color > b.color) return 1;
+      return 0;
+    });
+    
+    inventoryArray.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "inventory-card";
+      div.innerHTML = `
+        <div style="display: flex; justify-content: space-between;">
+          <div>
+            <strong>${item.type} - ${item.color}</strong><br>
+            <small>${currentLang === 'es' ? 'Precio:' : 'Price:'} RD$${item.price?.toFixed(2) || '0.00'}/kg</small>
+          </div>
+          <div style="text-align: right;">
+            <strong>${item.total.toFixed(2)} kg</strong><br>
+            <small>${new Date(item.lastUpdated).toLocaleDateString()}</small>
+          </div>
+        </div>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  async function addToInventory() {
+    const type = document.getElementById("inv-filament-type").value;
+    const color = document.getElementById("inv-color").value || "Sin color";
+    const quantity = parseFloat(document.getElementById("inv-quantity").value) || 0;
+    const price = parseFloat(document.getElementById("inv-price").value) || 0;
+    
+    if (quantity <= 0) {
+      alert(currentLang === 'es' ? 'La cantidad debe ser mayor que cero' : 'Quantity must be greater than zero');
+      return;
+    }
+    
+    try {
+      await db.collection("inventory").add({
+        type: type,
+        color: color,
+        quantity: quantity,
+        remaining: quantity,
+        price: price,
+        date: new Date().toISOString()
+      });
+      
+      alert(currentLang === 'es' ? 'Inventario actualizado correctamente' : 'Inventory updated successfully');
+      document.getElementById("inv-quantity").value = "1.00";
+      document.getElementById("inv-color").value = "";
+      
+      // Recargar la lista de inventario
+      const inventorySnapshot = await db.collection("inventory")
+        .orderBy("date", "desc")
+        .get();
+      
+      const inventoryData = inventorySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderInventoryList(inventoryData);
+      
+    } catch (error) {
+      console.error("Error adding to inventory:", error);
+      alert(currentLang === 'es' ? 'Error al actualizar el inventario' : 'Error updating inventory');
+    }
+  }
+
+  function renderFinancialReports(invoices, customers) {
+    // Calcular totales
+    let totalSales = 0;
+    let totalPending = 0;
+    let totalCosts = 0;
+    let totalProfit = 0;
+    let totalInvoices = invoices.length;
+    let totalMargin = 0;
+    
+    invoices.forEach(invoice => {
+      totalSales += invoice.suggestedPrice || 0;
+      totalCosts += invoice.totalCost || 0;
+      
+      if (!invoice.paid) {
+        totalPending += invoice.remainingBalance || invoice.suggestedPrice || 0;
+      }
+      
+      if (invoice.totalCost > 0) {
+        const margin = ((invoice.suggestedPrice - invoice.totalCost) / invoice.totalCost) * 100;
+        totalMargin += margin;
+      }
+    });
+    
+    totalProfit = totalSales - totalCosts;
+    const avgMargin = totalInvoices > 0 ? (totalMargin / totalInvoices) : 0;
+    
+    // Actualizar UI
+    document.getElementById("total-sales").textContent = totalSales.toFixed(2);
+    document.getElementById("total-pending").textContent = totalPending.toFixed(2);
+    document.getElementById("total-costs").textContent = totalCosts.toFixed(2);
+    document.getElementById("total-profit").textContent = totalProfit.toFixed(2);
+    document.getElementById("avg-margin").textContent = avgMargin.toFixed(1);
+    document.getElementById("total-invoices").textContent = totalInvoices;
+    
+    // Renderizar lista de pagos pendientes
+    renderPendingPaymentsList(invoices);
+  }
+
+  function renderPendingPaymentsList(invoices) {
+    const list = document.getElementById("pending-payments-list");
+    list.innerHTML = "";
+    
+    const pendingInvoices = invoices.filter(invoice => !invoice.paid);
+    
+    if (pendingInvoices.length === 0) {
+      list.innerHTML = `<div style="text-align:center; padding:20px; color:#a0aec0;">${currentLang === 'es' ? 'No hay pagos pendientes' : 'No pending payments'}</div>`;
+      return;
+    }
+    
+    pendingInvoices.slice(0, 5).forEach(invoice => {
+      const div = document.createElement("div");
+      div.style.padding = "10px";
+      div.style.borderBottom = "1px solid #4a5568";
+      
+      let paymentInfo = "";
+      if (invoice.amountPaid > 0) {
+        paymentInfo = `<small>${currentLang === 'es' ? 'Abonado:' : 'Paid:'} RD$${invoice.amountPaid.toFixed(2)} (${currentLang === 'es' ? 'Saldo:' : 'Balance:'} RD$${invoice.remainingBalance.toFixed(2)})</small>`;
+      }
+      
+      div.innerHTML = `
+        <div style="display: flex; justify-content: space-between;">
+          <div>
+            <strong>${invoice.customerName}</strong><br>
+            <small>${invoice.invoiceNumber}</small>
+            ${paymentInfo}
+          </div>
+          <div style="text-align: right;">
+            <strong>RD$${invoice.suggestedPrice?.toFixed(2) || '0.00'}</strong><br>
+            <small>${new Date(invoice.date).toLocaleDateString()}</small>
+          </div>
+        </div>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  function renderRecentActivity(invoices) {
+    const container = document.getElementById("recent-activity");
+    container.innerHTML = "";
+    
+    if (invoices.length === 0) {
+      container.innerHTML = `<div style="text-align:center; padding:20px; color:#a0aec0;">${currentLang === 'es' ? 'No hay actividad reciente' : 'No recent activity'}</div>`;
+      return;
+    }
+    
+    invoices.slice(0, 5).forEach(invoice => {
+      const div = document.createElement("div");
+      div.style.padding = "10px";
+      div.style.borderBottom = "1px solid #4a5568";
+      
+      let paymentInfo = "";
+      if (invoice.status === "pending" && invoice.amountPaid > 0) {
+        paymentInfo = `<small>${currentLang === 'es' ? 'Abonado:' : 'Paid:'} RD$${invoice.amountPaid.toFixed(2)} (${currentLang === 'es' ? 'Saldo:' : 'Balance:'} RD$${invoice.remainingBalance.toFixed(2)})</small>`;
+      }
+      
+      div.innerHTML = `
+        <div style="display: flex; justify-content: space-between;">
+          <div>
+            <strong>${invoice.customerName}</strong><br>
+            <small>${new Date(invoice.date).toLocaleString()}</small>
+            ${paymentInfo}
+          </div>
+          <div style="text-align: right;">
+            <strong>RD$${invoice.suggestedPrice?.toFixed(2) || '0.00'}</strong><br>
+            <small>${invoice.invoiceNumber}</small>
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  async function checkAlerts() {
+    const alertsContainer = document.getElementById("alerts-container");
+    alertsContainer.innerHTML = "";
+    
+    try {
+      // Verificar pagos pendientes
+      const pendingQuery = await db.collection("invoices")
+        .where("paid", "==", false)
+        .get();
+      
+      const pendingAmount = pendingQuery.docs.reduce((sum, doc) => {
+        const data = doc.data();
+        return sum + (data.remainingBalance || data.suggestedPrice || 0);
+      }, 0);
+      
+      if (pendingAmount > 0) {
+        const alertDiv = document.createElement("div");
+        alertDiv.className = "alert-banner warning";
+        alertDiv.innerHTML = `
+          <span>${currentLang === 'es' ? `Tienes ${pendingQuery.size} facturas pendientes por un total de RD$${pendingAmount.toFixed(2)}` : `You have ${pendingQuery.size} pending invoices for a total of RD$${pendingAmount.toFixed(2)}`}</span>
+          <button class="btn-payment" style="padding: 5px 10px; font-size: 0.8rem;" onclick="openDashboard(); openTab(event, 'reports-tab')">${currentLang === 'es' ? 'Ver detalles' : 'View details'}</button>
+        `;
+        alertsContainer.appendChild(alertDiv);
+      }
+      
+      // Verificar inventario bajo
+      const inventoryQuery = await db.collection("inventory")
+        .orderBy("date", "desc")
+        .get();
+      
+      const lowInventory = [];
+      inventoryQuery.forEach(doc => {
+        const item = doc.data();
+        if (item.remaining < 0.5) { // Menos de 500g
+          lowInventory.push(item);
+        }
+      });
+      
+      if (lowInventory.length > 0) {
+        const alertDiv = document.createElement("div");
+        alertDiv.className = "alert-banner info";
+        alertDiv.innerHTML = `
+          <span>${currentLang === 'es' ? `Bajo inventario: ${lowInventory.map(item => `${item.type} (${item.remaining.toFixed(2)}kg)`).join(', ')}` : `Low inventory: ${lowInventory.map(item => `${item.type} (${item.remaining.toFixed(2)}kg)`).join(', ')}`}</span>
+          <button class="btn-save" style="padding: 5px 10px; font-size: 0.8rem;" onclick="openDashboard(); openTab(event, 'inventory-tab')">${currentLang === 'es' ? 'Reponer' : 'Restock'}</button>
+        `;
+        alertsContainer.appendChild(alertDiv);
+      }
+      
+    } catch (error) {
+      console.error("Error checking alerts:", error);
+    }
   }
 
   function getFilamentTypeName(price) {
@@ -1154,35 +2214,6 @@
       console.error("Error saving template:", error);
       alert(currentLang === 'es' ? 'Error al guardar la plantilla' : 'Error saving template');
     }
-  }
-
-  function renderRecentActivity(invoices) {
-    const container = document.getElementById("recent-activity");
-    container.innerHTML = "";
-    
-    if (invoices.length === 0) {
-      container.innerHTML = `<div style="text-align:center; padding:20px; color:#a0aec0;">${currentLang === 'es' ? 'No hay actividad reciente' : 'No recent activity'}</div>`;
-      return;
-    }
-    
-    invoices.slice(0, 5).forEach(invoice => {
-      const div = document.createElement("div");
-      div.style.padding = "10px";
-      div.style.borderBottom = "1px solid #4a5568";
-      div.innerHTML = `
-        <div style="display: flex; justify-content: space-between;">
-          <div>
-            <strong>${invoice.customerName}</strong><br>
-            <small>${new Date(invoice.date).toLocaleString()}</small>
-          </div>
-          <div style="text-align: right;">
-            <strong>RD$${invoice.suggestedPrice.toFixed(2)}</strong><br>
-            <small>${invoice.invoiceNumber}</small>
-          </div>
-        </div>
-      `;
-      container.appendChild(div);
-    });
   }
 
   function createMonthlyProfitChart(invoices) {
@@ -1363,16 +2394,24 @@
     }
   });
 
+  // Actualizar saldo pendiente cuando cambia el monto abonado
+  document.getElementById("amountPaid").addEventListener("input", function() {
+    updateRemainingBalance();
+  });
+
   // Inicialización
   window.onload = async function() {
     translatePage();
     calculateResults();
     await renderHistory();
     await loadCustomersForAutocomplete();
+    await checkAlerts();
     
     // Asignar eventos a los inputs
     document.querySelectorAll("input").forEach(input => {
-      input.addEventListener("input", calculateResults);
+      if (input.id !== "amountPaid") { // Evitar duplicar el evento para amountPaid
+        input.addEventListener("input", calculateResults);
+      }
     });
     
     document.getElementById("filamentPrice").addEventListener("input", function() {
