@@ -140,7 +140,9 @@
     .btn-dashboard,
     .btn-template,
     .btn-payment,
-    .btn-workflow {
+    .btn-workflow,
+    .btn-whatsapp,
+    .btn-notify {
       display: inline-block;
       margin-top: 10px;
       margin-right: 10px;
@@ -194,6 +196,16 @@
       color: white;
     }
 
+    .btn-whatsapp {
+      background: linear-gradient(to right, #25D366, #128C7E);
+      color: white;
+    }
+
+    .btn-notify {
+      background: linear-gradient(to right, #34B7F1, #1DA1F2);
+      color: white;
+    }
+
     .btn-export:hover,
     .btn-save:hover,
     .btn-clear:hover,
@@ -201,7 +213,9 @@
     .btn-dashboard:hover,
     .btn-template:hover,
     .btn-payment:hover,
-    .btn-workflow:hover {
+    .btn-workflow:hover,
+    .btn-whatsapp:hover,
+    .btn-notify:hover {
       transform: translateY(-3px);
       box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
     }
@@ -410,12 +424,12 @@
       margin-left: 8px;
     }
 
-    .status-pending {
+    .status-received {
       background-color: #FF9800;
       color: #fff;
     }
 
-    .status-in-progress {
+    .status-printing {
       background-color: #2196F3;
       color: #fff;
     }
@@ -432,6 +446,11 @@
 
     .status-paid {
       background-color: #607D8B;
+      color: #fff;
+    }
+
+    .status-pending {
+      background-color: #f44336;
       color: #fff;
     }
 
@@ -459,6 +478,10 @@
 
     .alert-banner.info {
       background-color: #2196F3;
+    }
+
+    .alert-banner.success {
+      background-color: #4CAF50;
     }
 
     .history-item-buttons {
@@ -496,6 +519,70 @@
 
     .payment-section.active {
       display: block;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #3c4758;
+      border-radius: 8px;
+    }
+
+    .checklist-item input[type="checkbox"] {
+      margin-right: 10px;
+    }
+
+    .checklist-item label {
+      margin: 0;
+      flex-grow: 1;
+    }
+
+    .task-assignment {
+      margin-top: 15px;
+      padding: 15px;
+      background-color: #3c4758;
+      border-radius: 8px;
+    }
+
+    .task-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #2d3748;
+      border-radius: 6px;
+    }
+
+    .whatsapp-modal-content {
+      max-width: 500px;
+    }
+
+    .whatsapp-message {
+      background-color: #ECE5DD;
+      color: #000;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .whatsapp-templates {
+      margin-top: 15px;
+    }
+
+    .whatsapp-template {
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #3c4758;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .whatsapp-template:hover {
+      background-color: #4a5568;
     }
 
     @media (max-width: 600px) {
@@ -556,9 +643,9 @@
     <div>
       <label for="status" id="lbl-status">Estado del Pedido</label>
       <select id="status" onchange="togglePaymentSection()">
-        <option value="pending">Pendiente</option>
-        <option value="in-progress">En Progreso</option>
-        <option value="completed">Completado</option>
+        <option value="received">Recibido</option>
+        <option value="printing">En impresión</option>
+        <option value="completed">Terminado</option>
         <option value="delivered">Entregado</option>
         <option value="paid">Pagado</option>
       </select>
@@ -653,6 +740,8 @@
     <button class="btn-clear" onclick="clearForm()" id="btn-clear">Limpiar Formulario</button>
     <button class="btn-template" onclick="saveTemplate()" id="btn-template">Guardar Plantilla</button>
     <button class="btn-payment" onclick="markAsPaid()" id="btn-payment">Marcar como Pagado</button>
+    <button class="btn-whatsapp" onclick="openWhatsAppModal()" id="btn-whatsapp">Enviar por WhatsApp</button>
+    <button class="btn-notify" onclick="sendStatusNotification()" id="btn-notify">Notificar Estado</button>
   </div>
 
   <div class="history" id="history-section">
@@ -766,18 +855,19 @@
     <h2 id="lbl-workflow-title">Flujo de Trabajo</h2>
     
     <div class="tabs">
-      <button class="tab active" onclick="openWorkflowTab(event, 'pending-tab')" id="tab-pending">Pendientes</button>
-      <button class="tab" onclick="openWorkflowTab(event, 'progress-tab')" id="tab-progress">En Progreso</button>
-      <button class="tab" onclick="openWorkflowTab(event, 'completed-tab')" id="tab-completed">Completados</button>
+      <button class="tab active" onclick="openWorkflowTab(event, 'received-tab')" id="tab-received">Recibidos</button>
+      <button class="tab" onclick="openWorkflowTab(event, 'printing-tab')" id="tab-printing">En Impresión</button>
+      <button class="tab" onclick="openWorkflowTab(event, 'completed-tab')" id="tab-completed">Terminados</button>
       <button class="tab" onclick="openWorkflowTab(event, 'delivered-tab')" id="tab-delivered">Entregados</button>
+      <button class="tab" onclick="openWorkflowTab(event, 'paid-tab')" id="tab-paid">Pagados</button>
     </div>
     
-    <div id="pending-tab" class="tab-content active">
-      <div id="pending-list" style="max-height: 500px; overflow-y: auto;"></div>
+    <div id="received-tab" class="tab-content active">
+      <div id="received-list" style="max-height: 500px; overflow-y: auto;"></div>
     </div>
     
-    <div id="progress-tab" class="tab-content">
-      <div id="progress-list" style="max-height: 500px; overflow-y: auto;"></div>
+    <div id="printing-tab" class="tab-content">
+      <div id="printing-list" style="max-height: 500px; overflow-y: auto;"></div>
     </div>
     
     <div id="completed-tab" class="tab-content">
@@ -786,6 +876,55 @@
     
     <div id="delivered-tab" class="tab-content">
       <div id="delivered-list" style="max-height: 500px; overflow-y: auto;"></div>
+    </div>
+    
+    <div id="paid-tab" class="tab-content">
+      <div id="paid-list" style="max-height: 500px; overflow-y: auto;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal WhatsApp -->
+<div id="whatsappModal" class="modal">
+  <div class="modal-content whatsapp-modal-content">
+    <span class="close" onclick="closeModal('whatsappModal')">&times;</span>
+    <h2 id="lbl-whatsapp-title">Enviar Mensaje por WhatsApp</h2>
+    
+    <div class="whatsapp-message" id="whatsapp-message-preview">
+      <!-- El mensaje se generará aquí -->
+    </div>
+    
+    <div class="whatsapp-templates">
+      <h3 id="lbl-whatsapp-templates">Plantillas de Mensaje</h3>
+      <div class="whatsapp-template" onclick="useWhatsAppTemplate('invoice')">
+        <strong id="lbl-template-invoice">Factura lista</strong>
+        <p id="template-invoice-text">Hola {cliente}, tu factura #{factura} está lista. Total: RD${total}. ¿Necesitas alguna aclaración?</p>
+      </div>
+      <div class="whatsapp-template" onclick="useWhatsAppTemplate('printing')">
+        <strong id="lbl-template-printing">En impresión</strong>
+        <p id="template-printing-text">Hola {cliente}, tu pedido #{factura} está en proceso de impresión. Te mantendremos informado.</p>
+      </div>
+      <div class="whatsapp-template" onclick="useWhatsAppTemplate('completed')">
+        <strong id="lbl-template-completed">Terminado</strong>
+        <p id="template-completed-text">Hola {cliente}, tu pedido #{factura} está terminado. ¿Cuándo podrás recogerlo?</p>
+      </div>
+      <div class="whatsapp-template" onclick="useWhatsAppTemplate('delivered')">
+        <strong id="lbl-template-delivered">Entregado</strong>
+        <p id="template-delivered-text">Hola {cliente}, tu pedido #{factura} ha sido entregado. ¡Gracias por confiar en nosotros!</p>
+      </div>
+      <div class="whatsapp-template" onclick="useWhatsAppTemplate('payment')">
+        <strong id="lbl-template-payment">Recordatorio de pago</strong>
+        <p id="template-payment-text">Hola {cliente}, recuerda que tienes un saldo pendiente de RD${saldo} en la factura #{factura}. ¿Necesitas alguna aclaración?</p>
+      </div>
+      <div class="whatsapp-template" onclick="useWhatsAppTemplate('feedback')">
+        <strong id="lbl-template-feedback">Solicitud de feedback</strong>
+        <p id="template-feedback-text">Hola {cliente}, ¿cómo ha sido tu experiencia con nuestro servicio? Agradecemos tus comentarios.</p>
+      </div>
+    </div>
+    
+    <div style="margin-top: 20px;">
+      <button class="btn-whatsapp" onclick="sendWhatsAppMessage()" id="btn-send-whatsapp">Enviar por WhatsApp</button>
+      <button class="btn-save" onclick="copyWhatsAppMessage()" id="btn-copy-whatsapp">Copiar Mensaje</button>
     </div>
   </div>
 </div>
@@ -808,10 +947,11 @@
   const db = firebase.firestore();
 
   // Variables globales
-  let currentInvoiceId = null; // Para almacenar el ID de la factura actualmente cargada
+  let currentInvoiceId = null;
   let currentLang = navigator.language.startsWith('es') ? 'es' : 'en';
   let monthlyProfitChart = null;
   let filamentUsageChart = null;
+  let currentWhatsAppTemplate = null;
 
   // Generar número de factura único
   function generateInvoiceNumber() {
@@ -868,6 +1008,8 @@
       "btn-template": "Guardar Plantilla",
       "btn-payment": "Marcar como Pagado",
       "btn-workflow": "Flujo de Trabajo",
+      "btn-whatsapp": "Enviar por WhatsApp",
+      "btn-notify": "Notificar Estado",
       "lbl-history": "Historial de Impresiones",
       "lbl-admin-results": "Resultados (Administrador)",
       "lbl-customer-results": "Detalles de la Factura (Cliente)",
@@ -896,24 +1038,56 @@
       "tab-templates": "Plantillas",
       "tab-inventory": "Inventario",
       "tab-reports": "Reportes",
-      "tab-pending": "Pendientes",
-      "tab-progress": "En Progreso",
-      "tab-completed": "Completados",
+      "tab-received": "Recibidos",
+      "tab-printing": "En Impresión",
+      "tab-completed": "Terminados",
       "tab-delivered": "Entregados",
+      "tab-paid": "Pagados",
       "customer-search-placeholder": "Buscar clientes...",
       "template-search-placeholder": "Buscar plantillas...",
-      "status-pending": "Pendiente",
-      "status-in-progress": "En Progreso",
-      "status-completed": "Completado",
+      "status-received": "Recibido",
+      "status-printing": "En impresión",
+      "status-completed": "Terminado",
       "status-delivered": "Entregado",
       "status-paid": "Pagado",
+      "status-pending": "Pendiente",
       "btn-edit": "Editar",
       "btn-delete": "Eliminar",
       "confirm-delete": "¿Estás seguro de que quieres eliminar esta factura?",
       "invoice-updated": "Factura actualizada correctamente",
       "invoice-deleted": "Factura eliminada correctamente",
       "lbl-amount-paid": "Monto Abonado (RD$)",
-      "lbl-remaining-balance": "Saldo Pendiente (RD$)"
+      "lbl-remaining-balance": "Saldo Pendiente (RD$)",
+      "lbl-whatsapp-title": "Enviar Mensaje por WhatsApp",
+      "lbl-whatsapp-templates": "Plantillas de Mensaje",
+      "lbl-template-invoice": "Factura lista",
+      "template-invoice-text": "Hola {cliente}, tu factura #{factura} está lista. Total: RD${total}. ¿Necesitas alguna aclaración?",
+      "lbl-template-printing": "En impresión",
+      "template-printing-text": "Hola {cliente}, tu pedido #{factura} está en proceso de impresión. Te mantendremos informado.",
+      "lbl-template-completed": "Terminado",
+      "template-completed-text": "Hola {cliente}, tu pedido #{factura} está terminado. ¿Cuándo podrás recogerlo?",
+      "lbl-template-delivered": "Entregado",
+      "template-delivered-text": "Hola {cliente}, tu pedido #{factura} ha sido entregado. ¡Gracias por confiar en nosotros!",
+      "lbl-template-payment": "Recordatorio de pago",
+      "template-payment-text": "Hola {cliente}, recuerda que tienes un saldo pendiente de RD${saldo} en la factura #{factura}. ¿Necesitas alguna aclaración?",
+      "lbl-template-feedback": "Solicitud de feedback",
+      "template-feedback-text": "Hola {cliente}, ¿cómo ha sido tu experiencia con nuestro servicio? Agradecemos tus comentarios.",
+      "btn-send-whatsapp": "Enviar por WhatsApp",
+      "btn-copy-whatsapp": "Copiar Mensaje",
+      "message-copied": "Mensaje copiado al portapapeles",
+      "whatsapp-sent": "Mensaje preparado para WhatsApp",
+      "notification-sent": "Notificación enviada al cliente",
+      "checklist-title": "Checklist de Preparación",
+      "checklist-1": "Verificar archivo STL",
+      "checklist-2": "Revisar dimensiones del modelo",
+      "checklist-3": "Confirmar tipo de filamento",
+      "checklist-4": "Calibrar impresora",
+      "checklist-5": "Preparar área de trabajo",
+      "tasks-title": "Asignación de Tareas",
+      "task-design": "Diseño",
+      "task-printing": "Impresión",
+      "task-post": "Post-procesado",
+      "task-delivery": "Entrega"
     },
     en: {
       "app-title": "Invoice",
@@ -953,6 +1127,8 @@
       "btn-template": "Save Template",
       "btn-payment": "Mark as Paid",
       "btn-workflow": "Workflow",
+      "btn-whatsapp": "Send via WhatsApp",
+      "btn-notify": "Notify Status",
       "lbl-history": "Print History",
       "lbl-admin-results": "Results (Admin)",
       "lbl-customer-results": "Invoice Details (Customer)",
@@ -981,24 +1157,56 @@
       "tab-templates": "Templates",
       "tab-inventory": "Inventory",
       "tab-reports": "Reports",
-      "tab-pending": "Pending",
-      "tab-progress": "In Progress",
+      "tab-received": "Received",
+      "tab-printing": "Printing",
       "tab-completed": "Completed",
       "tab-delivered": "Delivered",
+      "tab-paid": "Paid",
       "customer-search-placeholder": "Search customers...",
       "template-search-placeholder": "Search templates...",
-      "status-pending": "Pending",
-      "status-in-progress": "In Progress",
+      "status-received": "Received",
+      "status-printing": "Printing",
       "status-completed": "Completed",
       "status-delivered": "Delivered",
       "status-paid": "Paid",
+      "status-pending": "Pending",
       "btn-edit": "Edit",
       "btn-delete": "Delete",
       "confirm-delete": "Are you sure you want to delete this invoice?",
       "invoice-updated": "Invoice updated successfully",
       "invoice-deleted": "Invoice deleted successfully",
       "lbl-amount-paid": "Amount Paid (RD$)",
-      "lbl-remaining-balance": "Remaining Balance (RD$)"
+      "lbl-remaining-balance": "Remaining Balance (RD$)",
+      "lbl-whatsapp-title": "Send WhatsApp Message",
+      "lbl-whatsapp-templates": "Message Templates",
+      "lbl-template-invoice": "Invoice ready",
+      "template-invoice-text": "Hello {customer}, your invoice #{invoice} is ready. Total: RD${total}. Do you need any clarification?",
+      "lbl-template-printing": "Printing",
+      "template-printing-text": "Hello {customer}, your order #{invoice} is being printed. We'll keep you updated.",
+      "lbl-template-completed": "Completed",
+      "template-completed-text": "Hello {customer}, your order #{invoice} is completed. When can you pick it up?",
+      "lbl-template-delivered": "Delivered",
+      "template-delivered-text": "Hello {customer}, your order #{invoice} has been delivered. Thank you for trusting us!",
+      "lbl-template-payment": "Payment reminder",
+      "template-payment-text": "Hello {customer}, remember you have a pending balance of RD${balance} for invoice #{invoice}. Do you need any clarification?",
+      "lbl-template-feedback": "Feedback request",
+      "template-feedback-text": "Hello {customer}, how was your experience with our service? We appreciate your feedback.",
+      "btn-send-whatsapp": "Send via WhatsApp",
+      "btn-copy-whatsapp": "Copy Message",
+      "message-copied": "Message copied to clipboard",
+      "whatsapp-sent": "Message prepared for WhatsApp",
+      "notification-sent": "Notification sent to customer",
+      "checklist-title": "Preparation Checklist",
+      "checklist-1": "Verify STL file",
+      "checklist-2": "Check model dimensions",
+      "checklist-3": "Confirm filament type",
+      "checklist-4": "Calibrate printer",
+      "checklist-5": "Prepare work area",
+      "tasks-title": "Task Assignment",
+      "task-design": "Design",
+      "task-printing": "Printing",
+      "task-post": "Post-processing",
+      "task-delivery": "Delivery"
     }
   };
 
@@ -1030,7 +1238,7 @@
     const status = document.getElementById("status").value;
     const paymentSection = document.getElementById("payment-section");
     
-    if (status === "pending") {
+    if (status === "received" || status === "printing") {
       paymentSection.classList.add("active");
       updateRemainingBalance();
     } else {
@@ -1174,7 +1382,7 @@
     
     // Mostrar información de pagos si está pendiente
     const status = document.getElementById("status").value;
-    if (status === "pending") {
+    if (status === "received" || status === "printing") {
       const amountPaid = parseFloat(document.getElementById("amountPaid").value) || 0;
       const remainingBalance = parseFloat(document.getElementById("remainingBalance").value) || 0;
       
@@ -1267,8 +1475,8 @@
           });
         }
         
-        // Actualizar inventario si el estado no es "pending"
-        if (status !== 'pending') {
+        // Actualizar inventario si el estado no es "received"
+        if (status !== 'received') {
           await updateInventory(parseFloat(document.getElementById("weight").value) || 0, document.getElementById("filamentType").value);
         }
         
@@ -1337,7 +1545,7 @@
         div.className = "history-item";
         
         let paymentInfo = "";
-        if (item.status === "pending" && item.amountPaid > 0) {
+        if ((item.status === "received" || item.status === "printing") && item.amountPaid > 0) {
           paymentInfo = `<div><small>${currentLang === 'es' ? 'Abonado:' : 'Paid:'} RD$${item.amountPaid.toFixed(2)} (${currentLang === 'es' ? 'Saldo:' : 'Balance:'} RD$${item.remainingBalance.toFixed(2)})</small></div>`;
         }
         
@@ -1369,11 +1577,12 @@
 
   function getStatusClass(status) {
     switch(status) {
-      case 'pending': return 'status-pending';
-      case 'in-progress': return 'status-in-progress';
+      case 'received': return 'status-received';
+      case 'printing': return 'status-printing';
       case 'completed': return 'status-completed';
       case 'delivered': return 'status-delivered';
       case 'paid': return 'status-paid';
+      case 'pending': return 'status-pending';
       default: return '';
     }
   }
@@ -1465,7 +1674,7 @@
         document.getElementById("margin").value = data.margin;
         document.getElementById("exchangeRate").value = data.exchangeRate || 58.00;
         document.getElementById("invoiceNumber").value = data.invoiceNumber;
-        document.getElementById("status").value = data.status || "pending";
+        document.getElementById("status").value = data.status || "received";
         document.getElementById("amountPaid").value = data.amountPaid || 0;
         document.getElementById("remainingBalance").value = data.remainingBalance || 0;
         
@@ -1495,7 +1704,7 @@
     document.getElementById("printerDepreciation").value = "14.00";
     document.getElementById("margin").value = "40";
     document.getElementById("exchangeRate").value = "58.00";
-    document.getElementById("status").value = "pending";
+    document.getElementById("status").value = "received";
     document.getElementById("amountPaid").value = "0";
     document.getElementById("remainingBalance").value = "0";
     document.getElementById('invoiceNumber').value = generateInvoiceNumber();
@@ -1686,13 +1895,13 @@
 
   async function loadWorkflowData() {
     try {
-      const pendingQuery = await db.collection("invoices")
-        .where("status", "==", "pending")
+      const receivedQuery = await db.collection("invoices")
+        .where("status", "==", "received")
         .orderBy("date", "desc")
         .get();
       
-      const progressQuery = await db.collection("invoices")
-        .where("status", "==", "in-progress")
+      const printingQuery = await db.collection("invoices")
+        .where("status", "==", "printing")
         .orderBy("date", "desc")
         .get();
       
@@ -1706,15 +1915,22 @@
         .orderBy("date", "desc")
         .get();
       
-      const pendingData = pendingQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      const progressData = progressQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const paidQuery = await db.collection("invoices")
+        .where("status", "==", "paid")
+        .orderBy("date", "desc")
+        .get();
+      
+      const receivedData = receivedQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const printingData = printingQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       const completedData = completedQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       const deliveredData = deliveredQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const paidData = paidQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       
-      renderWorkflowList("pending-list", pendingData);
-      renderWorkflowList("progress-list", progressData);
+      renderWorkflowList("received-list", receivedData);
+      renderWorkflowList("printing-list", printingData);
       renderWorkflowList("completed-list", completedData);
       renderWorkflowList("delivered-list", deliveredData);
+      renderWorkflowList("paid-list", paidData);
       
     } catch (error) {
       console.error("Error loading workflow data:", error);
@@ -1735,8 +1951,84 @@
       div.className = "workflow-card";
       
       let paymentInfo = "";
-      if (item.status === "pending" && item.amountPaid > 0) {
+      if ((item.status === "received" || item.status === "printing") && item.amountPaid > 0) {
         paymentInfo = `<div><small>${currentLang === 'es' ? 'Abonado:' : 'Paid:'} RD$${item.amountPaid.toFixed(2)} (${currentLang === 'es' ? 'Saldo:' : 'Balance:'} RD$${item.remainingBalance.toFixed(2)})</small></div>`;
+      }
+      
+      // Checklist de preparación
+      let checklist = "";
+      if (item.status === "received") {
+        checklist = `
+          <div style="margin-top: 10px;">
+            <strong>${translations[currentLang]["checklist-title"]}</strong>
+            <div class="checklist-item">
+              <input type="checkbox" id="check-1" ${item.checklist?.includes('check-1') ? 'checked' : ''}>
+              <label for="check-1">${translations[currentLang]["checklist-1"]}</label>
+            </div>
+            <div class="checklist-item">
+              <input type="checkbox" id="check-2" ${item.checklist?.includes('check-2') ? 'checked' : ''}>
+              <label for="check-2">${translations[currentLang]["checklist-2"]}</label>
+            </div>
+            <div class="checklist-item">
+              <input type="checkbox" id="check-3" ${item.checklist?.includes('check-3') ? 'checked' : ''}>
+              <label for="check-3">${translations[currentLang]["checklist-3"]}</label>
+            </div>
+            <div class="checklist-item">
+              <input type="checkbox" id="check-4" ${item.checklist?.includes('check-4') ? 'checked' : ''}>
+              <label for="check-4">${translations[currentLang]["checklist-4"]}</label>
+            </div>
+            <div class="checklist-item">
+              <input type="checkbox" id="check-5" ${item.checklist?.includes('check-5') ? 'checked' : ''}>
+              <label for="check-5">${translations[currentLang]["checklist-5"]}</label>
+            </div>
+          </div>
+        `;
+      }
+      
+      // Asignación de tareas
+      let tasks = "";
+      if (item.status === "printing" || item.status === "completed") {
+        tasks = `
+          <div class="task-assignment">
+            <strong>${translations[currentLang]["tasks-title"]}</strong>
+            <div class="task-item">
+              <span>${translations[currentLang]["task-design"]}</span>
+              <select>
+                <option>${currentLang === 'es' ? 'Asignar' : 'Assign'}</option>
+                <option>Juan</option>
+                <option>María</option>
+                <option>Carlos</option>
+              </select>
+            </div>
+            <div class="task-item">
+              <span>${translations[currentLang]["task-printing"]}</span>
+              <select>
+                <option>${currentLang === 'es' ? 'Asignar' : 'Assign'}</option>
+                <option>Juan</option>
+                <option>María</option>
+                <option>Carlos</option>
+              </select>
+            </div>
+            <div class="task-item">
+              <span>${translations[currentLang]["task-post"]}</span>
+              <select>
+                <option>${currentLang === 'es' ? 'Asignar' : 'Assign'}</option>
+                <option>Juan</option>
+                <option>María</option>
+                <option>Carlos</option>
+              </select>
+            </div>
+            <div class="task-item">
+              <span>${translations[currentLang]["task-delivery"]}</span>
+              <select>
+                <option>${currentLang === 'es' ? 'Asignar' : 'Assign'}</option>
+                <option>Juan</option>
+                <option>María</option>
+                <option>Carlos</option>
+              </select>
+            </div>
+          </div>
+        `;
       }
       
       div.innerHTML = `
@@ -1751,12 +2043,17 @@
           </div>
         </div>
         ${paymentInfo}
+        ${checklist}
+        ${tasks}
         <div style="margin-top: 10px; display: flex; justify-content: space-between;">
           <button class="btn-save" style="padding: 5px 10px; font-size: 0.8rem;" onclick="updateWorkflowStatus('${item.id}', '${getNextStatus(item.status)}')">
             ${getNextStatusText(item.status)}
           </button>
           <button class="btn-export" style="padding: 5px 10px; font-size: 0.8rem;" onclick="loadWorkflowItem('${item.id}')">
             ${currentLang === 'es' ? 'Ver' : 'View'}
+          </button>
+          <button class="btn-whatsapp" style="padding: 5px 10px; font-size: 0.8rem;" onclick="openWhatsAppModal('${item.id}')">
+            WhatsApp
           </button>
         </div>
       `;
@@ -1766,18 +2063,18 @@
 
   function getNextStatus(currentStatus) {
     switch(currentStatus) {
-      case 'pending': return 'in-progress';
-      case 'in-progress': return 'completed';
+      case 'received': return 'printing';
+      case 'printing': return 'completed';
       case 'completed': return 'delivered';
       case 'delivered': return 'paid';
-      default: return 'paid';
+      default: return currentStatus;
     }
   }
 
   function getNextStatusText(currentStatus) {
     switch(currentStatus) {
-      case 'pending': return currentLang === 'es' ? 'Iniciar Proceso' : 'Start Process';
-      case 'in-progress': return currentLang === 'es' ? 'Marcar Completado' : 'Mark Completed';
+      case 'received': return currentLang === 'es' ? 'Iniciar Impresión' : 'Start Printing';
+      case 'printing': return currentLang === 'es' ? 'Marcar Terminado' : 'Mark Completed';
       case 'completed': return currentLang === 'es' ? 'Marcar Entregado' : 'Mark Delivered';
       case 'delivered': return currentLang === 'es' ? 'Marcar Pagado' : 'Mark Paid';
       default: return currentLang === 'es' ? 'Siguiente' : 'Next';
@@ -2085,7 +2382,7 @@
       div.style.borderBottom = "1px solid #4a5568";
       
       let paymentInfo = "";
-      if (invoice.status === "pending" && invoice.amountPaid > 0) {
+      if ((invoice.status === "received" || invoice.status === "printing") && invoice.amountPaid > 0) {
         paymentInfo = `<small>${currentLang === 'es' ? 'Abonado:' : 'Paid:'} RD$${invoice.amountPaid.toFixed(2)} (${currentLang === 'es' ? 'Saldo:' : 'Balance:'} RD$${invoice.remainingBalance.toFixed(2)})</small>`;
       }
       
@@ -2152,6 +2449,27 @@
           <button class="btn-save" style="padding: 5px 10px; font-size: 0.8rem;" onclick="openDashboard(); openTab(event, 'inventory-tab')">${currentLang === 'es' ? 'Reponer' : 'Restock'}</button>
         `;
         alertsContainer.appendChild(alertDiv);
+      }
+      
+      // Verificar trabajos recibidos sin avanzar
+      const receivedQuery = await db.collection("invoices")
+        .where("status", "==", "received")
+        .orderBy("date", "asc")
+        .get();
+      
+      if (receivedQuery.size > 0) {
+        const oldest = receivedQuery.docs[0].data();
+        const daysOld = Math.floor((new Date() - new Date(oldest.date)) / (1000 * 60 * 60 * 24));
+        
+        if (daysOld > 2) {
+          const alertDiv = document.createElement("div");
+          alertDiv.className = "alert-banner";
+          alertDiv.innerHTML = `
+            <span>${currentLang === 'es' ? `Tienes ${receivedQuery.size} trabajos recibidos sin avanzar. El más antiguo tiene ${daysOld} días.` : `You have ${receivedQuery.size} received jobs not started. The oldest is ${daysOld} days old.`}</span>
+            <button class="btn-workflow" style="padding: 5px 10px; font-size: 0.8rem;" onclick="openWorkflow()">${currentLang === 'es' ? 'Ver flujo' : 'View workflow'}</button>
+          `;
+          alertsContainer.appendChild(alertDiv);
+        }
       }
       
     } catch (error) {
@@ -2383,6 +2701,201 @@
       });
     } catch (error) {
       console.error("Error loading customers:", error);
+    }
+  }
+
+  // Funciones de WhatsApp
+  function openWhatsAppModal(invoiceId = null) {
+    document.getElementById("whatsappModal").style.display = "block";
+    
+    // Si se proporciona un invoiceId, cargar los datos de esa factura
+    if (invoiceId) {
+      loadInvoiceForWhatsApp(invoiceId);
+    } else {
+      // Usar los datos del formulario actual
+      updateWhatsAppMessage();
+    }
+  }
+
+  async function loadInvoiceForWhatsApp(invoiceId) {
+    try {
+      const doc = await db.collection("invoices").doc(invoiceId).get();
+      if (doc.exists) {
+        const data = doc.data();
+        
+        // Actualizar el mensaje con los datos de la factura
+        const messagePreview = document.getElementById("whatsapp-message-preview");
+        const message = generateWhatsAppMessage(data);
+        messagePreview.innerHTML = message.replace(/\n/g, "<br>");
+      }
+    } catch (error) {
+      console.error("Error loading invoice for WhatsApp:", error);
+    }
+  }
+
+  function updateWhatsAppMessage() {
+    const customerName = document.getElementById("customerName").value || (currentLang === 'es' ? "Cliente" : "Customer");
+    const invoiceNumber = document.getElementById("invoiceNumber").value || "FAC-00000";
+    const totalPrice = results.customerTotalPrice.textContent || "0.00";
+    const remainingBalance = document.getElementById("remainingBalance").value || "0.00";
+    const status = document.getElementById("status").value;
+    
+    let message = "";
+    
+    if (currentWhatsAppTemplate) {
+      // Usar la plantilla seleccionada
+      message = translations[currentLang][`template-${currentWhatsAppTemplate}-text`];
+    } else {
+      // Mensaje genérico basado en el estado
+      switch(status) {
+        case 'received':
+          message = translations[currentLang]["template-invoice-text"];
+          break;
+        case 'printing':
+          message = translations[currentLang]["template-printing-text"];
+          break;
+        case 'completed':
+          message = translations[currentLang]["template-completed-text"];
+          break;
+        case 'delivered':
+          message = translations[currentLang]["template-delivered-text"];
+          break;
+        case 'paid':
+          message = translations[currentLang]["template-feedback-text"];
+          break;
+        default:
+          message = translations[currentLang]["template-invoice-text"];
+      }
+    }
+    
+    // Reemplazar variables en el mensaje
+    message = message.replace(/{cliente}|{customer}/g, customerName)
+                    .replace(/{factura}|{invoice}/g, invoiceNumber)
+                    .replace(/{total}|{total}/g, totalPrice)
+                    .replace(/{saldo}|{balance}/g, remainingBalance);
+    
+    const messagePreview = document.getElementById("whatsapp-message-preview");
+    messagePreview.innerHTML = message.replace(/\n/g, "<br>");
+  }
+
+  function useWhatsAppTemplate(template) {
+    currentWhatsAppTemplate = template;
+    updateWhatsAppMessage();
+  }
+
+  function generateWhatsAppMessage(invoiceData) {
+    const lang = translations[currentLang];
+    const customerName = invoiceData.customerName || (currentLang === 'es' ? "Cliente" : "Customer");
+    const invoiceNumber = invoiceData.invoiceNumber || "FAC-00000";
+    const totalPrice = invoiceData.suggestedPrice?.toFixed(2) || "0.00";
+    const remainingBalance = invoiceData.remainingBalance?.toFixed(2) || "0.00";
+    const status = invoiceData.status || "received";
+    
+    let message = "";
+    
+    if (currentWhatsAppTemplate) {
+      // Usar la plantilla seleccionada
+      message = translations[currentLang][`template-${currentWhatsAppTemplate}-text`];
+    } else {
+      // Mensaje genérico basado en el estado
+      switch(status) {
+        case 'received':
+          message = translations[currentLang]["template-invoice-text"];
+          break;
+        case 'printing':
+          message = translations[currentLang]["template-printing-text"];
+          break;
+        case 'completed':
+          message = translations[currentLang]["template-completed-text"];
+          break;
+        case 'delivered':
+          message = translations[currentLang]["template-delivered-text"];
+          break;
+        case 'paid':
+          message = translations[currentLang]["template-feedback-text"];
+          break;
+        default:
+          message = translations[currentLang]["template-invoice-text"];
+      }
+    }
+    
+    // Reemplazar variables en el mensaje
+    message = message.replace(/{cliente}|{customer}/g, customerName)
+                    .replace(/{factura}|{invoice}/g, invoiceNumber)
+                    .replace(/{total}|{total}/g, totalPrice)
+                    .replace(/{saldo}|{balance}/g, remainingBalance);
+    
+    return message;
+  }
+
+  function sendWhatsAppMessage() {
+    const messagePreview = document.getElementById("whatsapp-message-preview");
+    const text = messagePreview.textContent || messagePreview.innerText;
+    const phoneNumber = "18493615653"; // Número de WhatsApp Business
+    
+    // Crear el enlace de WhatsApp
+    const encodedMessage = encodeURIComponent(text);
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+    
+    // Abrir en una nueva pestaña
+    window.open(whatsappUrl, '_blank');
+    
+    alert(translations[currentLang]["whatsapp-sent"]);
+    closeModal("whatsappModal");
+  }
+
+  function copyWhatsAppMessage() {
+    const messagePreview = document.getElementById("whatsapp-message-preview");
+    const text = messagePreview.textContent || messagePreview.innerText;
+    
+    navigator.clipboard.writeText(text).then(() => {
+      alert(translations[currentLang]["message-copied"]);
+    }).catch(err => {
+      console.error('Error al copiar el mensaje: ', err);
+    });
+  }
+
+  async function sendStatusNotification() {
+    const customerName = document.getElementById("customerName").value;
+    const invoiceNumber = document.getElementById("invoiceNumber").value;
+    const status = document.getElementById("status").value;
+    
+    if (!customerName || !invoiceNumber) {
+      alert(currentLang === 'es' ? 'Por favor complete los datos del cliente y número de factura' : 'Please fill in customer name and invoice number');
+      return;
+    }
+    
+    try {
+      // Buscar la factura en Firestore si no está cargada
+      let invoiceData;
+      if (currentInvoiceId) {
+        const doc = await db.collection("invoices").doc(currentInvoiceId).get();
+        invoiceData = doc.data();
+      } else {
+        const invoiceQuery = await db.collection("invoices")
+          .where("invoiceNumber", "==", invoiceNumber)
+          .limit(1)
+          .get();
+        
+        if (invoiceQuery.empty) {
+          alert(currentLang === 'es' ? 'No se encontró la factura' : 'Invoice not found');
+          return;
+        }
+        
+        invoiceData = invoiceQuery.docs[0].data();
+      }
+      
+      // Generar el mensaje según el estado
+      currentWhatsAppTemplate = status;
+      const message = generateWhatsAppMessage(invoiceData);
+      
+      // Aquí podrías implementar el envío real de la notificación
+      // Por ahora solo mostramos un mensaje de éxito
+      alert(translations[currentLang]["notification-sent"]);
+      
+    } catch (error) {
+      console.error("Error sending notification:", error);
+      alert(currentLang === 'es' ? 'Error al enviar la notificación' : 'Error sending notification');
     }
   }
 
