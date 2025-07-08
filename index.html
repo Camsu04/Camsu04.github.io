@@ -140,9 +140,8 @@
     .btn-dashboard,
     .btn-template,
     .btn-payment,
-    .btn-workflow,
     .btn-whatsapp,
-    .btn-notify {
+    .btn-report {
       display: inline-block;
       margin-top: 10px;
       margin-right: 10px;
@@ -191,18 +190,13 @@
       color: white;
     }
 
-    .btn-workflow {
-      background: linear-gradient(to right, #00BCD4, #0097A7);
-      color: white;
-    }
-
     .btn-whatsapp {
       background: linear-gradient(to right, #25D366, #128C7E);
       color: white;
     }
 
-    .btn-notify {
-      background: linear-gradient(to right, #34B7F1, #1DA1F2);
+    .btn-report {
+      background: linear-gradient(to right, #673AB7, #512DA8);
       color: white;
     }
 
@@ -213,9 +207,8 @@
     .btn-dashboard:hover,
     .btn-template:hover,
     .btn-payment:hover,
-    .btn-workflow:hover,
     .btn-whatsapp:hover,
-    .btn-notify:hover {
+    .btn-report:hover {
       transform: translateY(-3px);
       box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
     }
@@ -391,19 +384,6 @@
       transform: translateY(-3px);
     }
 
-    .workflow-card {
-      background-color: #3c4758;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      transition: all 0.3s ease;
-    }
-
-    .workflow-card:hover {
-      background-color: #4a5568;
-      transform: translateY(-3px);
-    }
-
     .search-box {
       width: 100%;
       padding: 12px 15px;
@@ -521,40 +501,6 @@
       display: block;
     }
 
-    .checklist-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-      padding: 10px;
-      background-color: #3c4758;
-      border-radius: 8px;
-    }
-
-    .checklist-item input[type="checkbox"] {
-      margin-right: 10px;
-    }
-
-    .checklist-item label {
-      margin: 0;
-      flex-grow: 1;
-    }
-
-    .task-assignment {
-      margin-top: 15px;
-      padding: 15px;
-      background-color: #3c4758;
-      border-radius: 8px;
-    }
-
-    .task-item {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      padding: 10px;
-      background-color: #2d3748;
-      border-radius: 6px;
-    }
-
     .whatsapp-modal-content {
       max-width: 500px;
     }
@@ -625,7 +571,7 @@
   <div style="text-align:right; margin-bottom:15px;">
     <button class="btn-lang" onclick="toggleLang()" id="btn-lang">Toggle Language</button>
     <button class="btn-dashboard" onclick="openDashboard()" id="btn-dashboard">Dashboard</button>
-    <button class="btn-workflow" onclick="openWorkflow()" id="btn-workflow">Flujo de Trabajo</button>
+    <button class="btn-report" onclick="generateMonthlyReport()" id="btn-report">Reporte Mensual</button>
   </div>
 
   <div id="alerts-container"></div>
@@ -741,7 +687,6 @@
     <button class="btn-template" onclick="saveTemplate()" id="btn-template">Guardar Plantilla</button>
     <button class="btn-payment" onclick="markAsPaid()" id="btn-payment">Marcar como Pagado</button>
     <button class="btn-whatsapp" onclick="openWhatsAppModal()" id="btn-whatsapp">Enviar por WhatsApp</button>
-    <button class="btn-notify" onclick="sendStatusNotification()" id="btn-notify">Notificar Estado</button>
   </div>
 
   <div class="history" id="history-section">
@@ -844,42 +789,6 @@
           <div><span id="lbl-total-invoices">Facturas Totales:</span> <span><span id="total-invoices">0</span></span></div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Workflow -->
-<div id="workflowModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('workflowModal')">&times;</span>
-    <h2 id="lbl-workflow-title">Flujo de Trabajo</h2>
-    
-    <div class="tabs">
-      <button class="tab active" onclick="openWorkflowTab(event, 'received-tab')" id="tab-received">Recibidos</button>
-      <button class="tab" onclick="openWorkflowTab(event, 'printing-tab')" id="tab-printing">En Impresión</button>
-      <button class="tab" onclick="openWorkflowTab(event, 'completed-tab')" id="tab-completed">Terminados</button>
-      <button class="tab" onclick="openWorkflowTab(event, 'delivered-tab')" id="tab-delivered">Entregados</button>
-      <button class="tab" onclick="openWorkflowTab(event, 'paid-tab')" id="tab-paid">Pagados</button>
-    </div>
-    
-    <div id="received-tab" class="tab-content active">
-      <div id="received-list" style="max-height: 500px; overflow-y: auto;"></div>
-    </div>
-    
-    <div id="printing-tab" class="tab-content">
-      <div id="printing-list" style="max-height: 500px; overflow-y: auto;"></div>
-    </div>
-    
-    <div id="completed-tab" class="tab-content">
-      <div id="completed-list" style="max-height: 500px; overflow-y: auto;"></div>
-    </div>
-    
-    <div id="delivered-tab" class="tab-content">
-      <div id="delivered-list" style="max-height: 500px; overflow-y: auto;"></div>
-    </div>
-    
-    <div id="paid-tab" class="tab-content">
-      <div id="paid-list" style="max-height: 500px; overflow-y: auto;"></div>
     </div>
   </div>
 </div>
@@ -1007,9 +916,8 @@
       "btn-dashboard": "Dashboard",
       "btn-template": "Guardar Plantilla",
       "btn-payment": "Marcar como Pagado",
-      "btn-workflow": "Flujo de Trabajo",
       "btn-whatsapp": "Enviar por WhatsApp",
-      "btn-notify": "Notificar Estado",
+      "btn-report": "Reporte Mensual",
       "lbl-history": "Historial de Impresiones",
       "lbl-admin-results": "Resultados (Administrador)",
       "lbl-customer-results": "Detalles de la Factura (Cliente)",
@@ -1032,17 +940,11 @@
       "lbl-total-profit": "Ganancias Totales:",
       "lbl-avg-margin": "Margen Promedio:",
       "lbl-total-invoices": "Facturas Totales:",
-      "lbl-workflow-title": "Flujo de Trabajo",
       "tab-stats": "Estadísticas",
       "tab-customers": "Clientes",
       "tab-templates": "Plantillas",
       "tab-inventory": "Inventario",
       "tab-reports": "Reportes",
-      "tab-received": "Recibidos",
-      "tab-printing": "En Impresión",
-      "tab-completed": "Terminados",
-      "tab-delivered": "Entregados",
-      "tab-paid": "Pagados",
       "customer-search-placeholder": "Buscar clientes...",
       "template-search-placeholder": "Buscar plantillas...",
       "status-received": "Recibido",
@@ -1076,18 +978,8 @@
       "btn-copy-whatsapp": "Copiar Mensaje",
       "message-copied": "Mensaje copiado al portapapeles",
       "whatsapp-sent": "Mensaje preparado para WhatsApp",
-      "notification-sent": "Notificación enviada al cliente",
-      "checklist-title": "Checklist de Preparación",
-      "checklist-1": "Verificar archivo STL",
-      "checklist-2": "Revisar dimensiones del modelo",
-      "checklist-3": "Confirmar tipo de filamento",
-      "checklist-4": "Calibrar impresora",
-      "checklist-5": "Preparar área de trabajo",
-      "tasks-title": "Asignación de Tareas",
-      "task-design": "Diseño",
-      "task-printing": "Impresión",
-      "task-post": "Post-procesado",
-      "task-delivery": "Entrega"
+      "report-generated": "Reporte mensual generado con éxito",
+      "report-error": "Error al generar el reporte mensual"
     },
     en: {
       "app-title": "Invoice",
@@ -1126,9 +1018,8 @@
       "btn-dashboard": "Dashboard",
       "btn-template": "Save Template",
       "btn-payment": "Mark as Paid",
-      "btn-workflow": "Workflow",
       "btn-whatsapp": "Send via WhatsApp",
-      "btn-notify": "Notify Status",
+      "btn-report": "Monthly Report",
       "lbl-history": "Print History",
       "lbl-admin-results": "Results (Admin)",
       "lbl-customer-results": "Invoice Details (Customer)",
@@ -1151,17 +1042,11 @@
       "lbl-total-profit": "Total Profit:",
       "lbl-avg-margin": "Average Margin:",
       "lbl-total-invoices": "Total Invoices:",
-      "lbl-workflow-title": "Workflow",
       "tab-stats": "Statistics",
       "tab-customers": "Customers",
       "tab-templates": "Templates",
       "tab-inventory": "Inventory",
       "tab-reports": "Reports",
-      "tab-received": "Received",
-      "tab-printing": "Printing",
-      "tab-completed": "Completed",
-      "tab-delivered": "Delivered",
-      "tab-paid": "Paid",
       "customer-search-placeholder": "Search customers...",
       "template-search-placeholder": "Search templates...",
       "status-received": "Received",
@@ -1195,18 +1080,8 @@
       "btn-copy-whatsapp": "Copy Message",
       "message-copied": "Message copied to clipboard",
       "whatsapp-sent": "Message prepared for WhatsApp",
-      "notification-sent": "Notification sent to customer",
-      "checklist-title": "Preparation Checklist",
-      "checklist-1": "Verify STL file",
-      "checklist-2": "Check model dimensions",
-      "checklist-3": "Confirm filament type",
-      "checklist-4": "Calibrate printer",
-      "checklist-5": "Prepare work area",
-      "tasks-title": "Task Assignment",
-      "task-design": "Design",
-      "task-printing": "Printing",
-      "task-post": "Post-processing",
-      "task-delivery": "Delivery"
+      "report-generated": "Monthly report generated successfully",
+      "report-error": "Error generating monthly report"
     }
   };
 
@@ -1406,6 +1281,131 @@
     
     // Guardar el PDF
     doc.save(`${currentLang === 'es' ? 'Factura' : 'Invoice'}_${invoiceNumber}.pdf`);
+  }
+
+  // Función para generar reporte mensual en PDF
+  async function generateMonthlyReport() {
+    // Verificar si jsPDF está cargado
+    if (typeof window.jspdf === 'undefined') {
+      alert(currentLang === 'es' ? 'Error: La biblioteca jsPDF no está cargada. Por favor recarga la página.' : 'Error: jsPDF library not loaded. Please reload the page.');
+      return;
+    }
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    try {
+      // Obtener el mes y año actual
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1;
+      const currentYear = now.getFullYear();
+      const monthName = now.toLocaleString(currentLang, { month: 'long' });
+      
+      // Obtener todas las facturas del mes actual
+      const startDate = new Date(currentYear, currentMonth - 1, 1);
+      const endDate = new Date(currentYear, currentMonth, 0, 23, 59, 59);
+      
+      const invoicesSnapshot = await db.collection("invoices")
+        .where("date", ">=", startDate.toISOString())
+        .where("date", "<=", endDate.toISOString())
+        .get();
+      
+      const invoices = invoicesSnapshot.docs.map(doc => doc.data());
+      
+      // Calcular totales
+      let totalSales = 0;
+      let totalCosts = 0;
+      let totalProfit = 0;
+      let paidInvoices = 0;
+      let pendingInvoices = 0;
+      
+      invoices.forEach(invoice => {
+        totalSales += invoice.suggestedPrice || 0;
+        totalCosts += invoice.totalCost || 0;
+        totalProfit += (invoice.suggestedPrice || 0) - (invoice.totalCost || 0);
+        
+        if (invoice.paid) {
+          paidInvoices++;
+        } else {
+          pendingInvoices++;
+        }
+      });
+      
+      // Encabezado del reporte
+      doc.setFontSize(18);
+      doc.setFont(undefined, 'bold');
+      doc.text("3DCraftRD", 105, 20, null, null, "center");
+      doc.setFontSize(16);
+      doc.text(currentLang === 'es' ? `Reporte Mensual - ${monthName} ${currentYear}` : `Monthly Report - ${monthName} ${currentYear}`, 105, 30, null, null, "center");
+      
+      // Resumen financiero
+      doc.setFontSize(14);
+      doc.text(currentLang === 'es' ? "Resumen Financiero" : "Financial Summary", 20, 45);
+      
+      doc.setFontSize(12);
+      doc.setFont(undefined, 'normal');
+      doc.text(`${currentLang === 'es' ? 'Ventas Totales:' : 'Total Sales:'} RD$${totalSales.toFixed(2)}`, 20, 55);
+      doc.text(`${currentLang === 'es' ? 'Costos Totales:' : 'Total Costs:'} RD$${totalCosts.toFixed(2)}`, 20, 65);
+      doc.text(`${currentLang === 'es' ? 'Ganancias Totales:' : 'Total Profit:'} RD$${totalProfit.toFixed(2)}`, 20, 75);
+      doc.text(`${currentLang === 'es' ? 'Facturas Pagadas:' : 'Paid Invoices:'} ${paidInvoices}`, 20, 85);
+      doc.text(`${currentLang === 'es' ? 'Facturas Pendientes:' : 'Pending Invoices:'} ${pendingInvoices}`, 20, 95);
+      
+      // Detalle de facturas
+      doc.setFontSize(14);
+      doc.text(currentLang === 'es' ? "Detalle de Facturas" : "Invoices Detail", 20, 110);
+      
+      let yPos = 120;
+      doc.setFontSize(10);
+      
+      // Encabezados de tabla
+      doc.setFont(undefined, 'bold');
+      doc.text(currentLang === 'es' ? "N° Factura" : "Invoice #", 20, yPos);
+      doc.text(currentLang === 'es' ? "Cliente" : "Customer", 50, yPos);
+      doc.text(currentLang === 'es' ? "Fecha" : "Date", 100, yPos);
+      doc.text("Total", 150, yPos);
+      doc.text(currentLang === 'es' ? "Estado" : "Status", 180, yPos);
+      
+      yPos += 7;
+      doc.setFont(undefined, 'normal');
+      
+      // Filas de facturas
+      invoices.forEach(invoice => {
+        if (yPos > 280) {
+          doc.addPage();
+          yPos = 20;
+          
+          // Encabezados de tabla en nueva página
+          doc.setFont(undefined, 'bold');
+          doc.text(currentLang === 'es' ? "N° Factura" : "Invoice #", 20, yPos);
+          doc.text(currentLang === 'es' ? "Cliente" : "Customer", 50, yPos);
+          doc.text(currentLang === 'es' ? "Fecha" : "Date", 100, yPos);
+          doc.text("Total", 150, yPos);
+          doc.text(currentLang === 'es' ? "Estado" : "Status", 180, yPos);
+          
+          yPos += 7;
+          doc.setFont(undefined, 'normal');
+        }
+        
+        const date = new Date(invoice.date);
+        const dateStr = date.toLocaleDateString();
+        
+        doc.text(invoice.invoiceNumber || "FAC-00000", 20, yPos);
+        doc.text(invoice.customerName || (currentLang === 'es' ? "Sin nombre" : "No name"), 50, yPos);
+        doc.text(dateStr, 100, yPos);
+        doc.text(`RD$${(invoice.suggestedPrice || 0).toFixed(2)}`, 150, yPos);
+        doc.text(getStatusText(invoice.status || "received"), 180, yPos);
+        
+        yPos += 7;
+      });
+      
+      // Guardar el PDF
+      doc.save(`${currentLang === 'es' ? 'Reporte_Mensual' : 'Monthly_Report'}_${monthName}_${currentYear}.pdf`);
+      
+      alert(translations[currentLang]["report-generated"]);
+    } catch (error) {
+      console.error("Error generating monthly report:", error);
+      alert(translations[currentLang]["report-error"]);
+    }
   }
 
   async function saveToHistory() {
@@ -1804,11 +1804,6 @@
     loadDashboardData();
   }
 
-  function openWorkflow() {
-    document.getElementById("workflowModal").style.display = "block";
-    loadWorkflowData();
-  }
-
   function closeModal(modalId) {
     document.getElementById(modalId).style.display = "none";
   }
@@ -1820,21 +1815,6 @@
     }
     
     const tabs = document.getElementsByClassName("tab");
-    for (let i = 0; i < tabs.length; i++) {
-      tabs[i].classList.remove("active");
-    }
-    
-    document.getElementById(tabName).classList.add("active");
-    evt.currentTarget.classList.add("active");
-  }
-
-  function openWorkflowTab(evt, tabName) {
-    const tabContents = document.querySelectorAll("#workflowModal .tab-content");
-    for (let i = 0; i < tabContents.length; i++) {
-      tabContents[i].classList.remove("active");
-    }
-    
-    const tabs = document.querySelectorAll("#workflowModal .tab");
     for (let i = 0; i < tabs.length; i++) {
       tabs[i].classList.remove("active");
     }
@@ -1890,254 +1870,6 @@
       
     } catch (error) {
       console.error("Error loading dashboard data:", error);
-    }
-  }
-
-  async function loadWorkflowData() {
-    try {
-      const receivedQuery = await db.collection("invoices")
-        .where("status", "==", "received")
-        .orderBy("date", "desc")
-        .get();
-      
-      const printingQuery = await db.collection("invoices")
-        .where("status", "==", "printing")
-        .orderBy("date", "desc")
-        .get();
-      
-      const completedQuery = await db.collection("invoices")
-        .where("status", "==", "completed")
-        .orderBy("date", "desc")
-        .get();
-      
-      const deliveredQuery = await db.collection("invoices")
-        .where("status", "==", "delivered")
-        .orderBy("date", "desc")
-        .get();
-      
-      const paidQuery = await db.collection("invoices")
-        .where("status", "==", "paid")
-        .orderBy("date", "desc")
-        .get();
-      
-      const receivedData = receivedQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      const printingData = printingQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      const completedData = completedQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      const deliveredData = deliveredQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      const paidData = paidQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      
-      renderWorkflowList("received-list", receivedData);
-      renderWorkflowList("printing-list", printingData);
-      renderWorkflowList("completed-list", completedData);
-      renderWorkflowList("delivered-list", deliveredData);
-      renderWorkflowList("paid-list", paidData);
-      
-    } catch (error) {
-      console.error("Error loading workflow data:", error);
-    }
-  }
-
-  function renderWorkflowList(listId, items) {
-    const list = document.getElementById(listId);
-    list.innerHTML = "";
-    
-    if (items.length === 0) {
-      list.innerHTML = `<div style="text-align:center; padding:20px; color:#a0aec0;">${currentLang === 'es' ? 'No hay elementos' : 'No items'}</div>`;
-      return;
-    }
-    
-    items.forEach(item => {
-      const div = document.createElement("div");
-      div.className = "workflow-card";
-      
-      let paymentInfo = "";
-      if ((item.status === "received" || item.status === "printing") && item.amountPaid > 0) {
-        paymentInfo = `<div><small>${currentLang === 'es' ? 'Abonado:' : 'Paid:'} RD$${item.amountPaid.toFixed(2)} (${currentLang === 'es' ? 'Saldo:' : 'Balance:'} RD$${item.remainingBalance.toFixed(2)})</small></div>`;
-      }
-      
-      // Checklist de preparación
-      let checklist = "";
-      if (item.status === "received") {
-        checklist = `
-          <div style="margin-top: 10px;">
-            <strong>${translations[currentLang]["checklist-title"]}</strong>
-            <div class="checklist-item">
-              <input type="checkbox" id="check-1" ${item.checklist?.includes('check-1') ? 'checked' : ''}>
-              <label for="check-1">${translations[currentLang]["checklist-1"]}</label>
-            </div>
-            <div class="checklist-item">
-              <input type="checkbox" id="check-2" ${item.checklist?.includes('check-2') ? 'checked' : ''}>
-              <label for="check-2">${translations[currentLang]["checklist-2"]}</label>
-            </div>
-            <div class="checklist-item">
-              <input type="checkbox" id="check-3" ${item.checklist?.includes('check-3') ? 'checked' : ''}>
-              <label for="check-3">${translations[currentLang]["checklist-3"]}</label>
-            </div>
-            <div class="checklist-item">
-              <input type="checkbox" id="check-4" ${item.checklist?.includes('check-4') ? 'checked' : ''}>
-              <label for="check-4">${translations[currentLang]["checklist-4"]}</label>
-            </div>
-            <div class="checklist-item">
-              <input type="checkbox" id="check-5" ${item.checklist?.includes('check-5') ? 'checked' : ''}>
-              <label for="check-5">${translations[currentLang]["checklist-5"]}</label>
-            </div>
-          </div>
-        `;
-      }
-      
-      // Asignación de tareas
-      let tasks = "";
-      if (item.status === "printing" || item.status === "completed") {
-        tasks = `
-          <div class="task-assignment">
-            <strong>${translations[currentLang]["tasks-title"]}</strong>
-            <div class="task-item">
-              <span>${translations[currentLang]["task-design"]}</span>
-              <select>
-                <option>${currentLang === 'es' ? 'Asignar' : 'Assign'}</option>
-                <option>Juan</option>
-                <option>María</option>
-                <option>Carlos</option>
-              </select>
-            </div>
-            <div class="task-item">
-              <span>${translations[currentLang]["task-printing"]}</span>
-              <select>
-                <option>${currentLang === 'es' ? 'Asignar' : 'Assign'}</option>
-                <option>Juan</option>
-                <option>María</option>
-                <option>Carlos</option>
-              </select>
-            </div>
-            <div class="task-item">
-              <span>${translations[currentLang]["task-post"]}</span>
-              <select>
-                <option>${currentLang === 'es' ? 'Asignar' : 'Assign'}</option>
-                <option>Juan</option>
-                <option>María</option>
-                <option>Carlos</option>
-              </select>
-            </div>
-            <div class="task-item">
-              <span>${translations[currentLang]["task-delivery"]}</span>
-              <select>
-                <option>${currentLang === 'es' ? 'Asignar' : 'Assign'}</option>
-                <option>Juan</option>
-                <option>María</option>
-                <option>Carlos</option>
-              </select>
-            </div>
-          </div>
-        `;
-      }
-      
-      div.innerHTML = `
-        <div style="display: flex; justify-content: space-between;">
-          <div>
-            <strong>${item.customerName}</strong><br>
-            <small>${item.invoiceNumber}</small>
-          </div>
-          <div style="text-align: right;">
-            <strong>RD$${item.suggestedPrice.toFixed(2)}</strong><br>
-            <small>${new Date(item.date).toLocaleDateString()}</small>
-          </div>
-        </div>
-        ${paymentInfo}
-        ${checklist}
-        ${tasks}
-        <div style="margin-top: 10px; display: flex; justify-content: space-between;">
-          <button class="btn-save" style="padding: 5px 10px; font-size: 0.8rem;" onclick="updateWorkflowStatus('${item.id}', '${getNextStatus(item.status)}')">
-            ${getNextStatusText(item.status)}
-          </button>
-          <button class="btn-export" style="padding: 5px 10px; font-size: 0.8rem;" onclick="loadWorkflowItem('${item.id}')">
-            ${currentLang === 'es' ? 'Ver' : 'View'}
-          </button>
-          <button class="btn-whatsapp" style="padding: 5px 10px; font-size: 0.8rem;" onclick="openWhatsAppModal('${item.id}')">
-            WhatsApp
-          </button>
-        </div>
-      `;
-      list.appendChild(div);
-    });
-  }
-
-  function getNextStatus(currentStatus) {
-    switch(currentStatus) {
-      case 'received': return 'printing';
-      case 'printing': return 'completed';
-      case 'completed': return 'delivered';
-      case 'delivered': return 'paid';
-      default: return currentStatus;
-    }
-  }
-
-  function getNextStatusText(currentStatus) {
-    switch(currentStatus) {
-      case 'received': return currentLang === 'es' ? 'Iniciar Impresión' : 'Start Printing';
-      case 'printing': return currentLang === 'es' ? 'Marcar Terminado' : 'Mark Completed';
-      case 'completed': return currentLang === 'es' ? 'Marcar Entregado' : 'Mark Delivered';
-      case 'delivered': return currentLang === 'es' ? 'Marcar Pagado' : 'Mark Paid';
-      default: return currentLang === 'es' ? 'Siguiente' : 'Next';
-    }
-  }
-
-  async function updateWorkflowStatus(docId, newStatus) {
-    try {
-      const updateData = {
-        status: newStatus,
-        paid: newStatus === 'paid'
-      };
-      
-      if (newStatus === 'paid') {
-        const invoiceDoc = await db.collection("invoices").doc(docId).get();
-        const invoiceData = invoiceDoc.data();
-        
-        updateData.amountPaid = invoiceData.suggestedPrice;
-        updateData.remainingBalance = 0;
-      }
-      
-      await db.collection("invoices").doc(docId).update(updateData);
-      
-      if (newStatus === 'paid') {
-        // Actualizar el monto pendiente del cliente
-        const invoiceDoc = await db.collection("invoices").doc(docId).get();
-        const invoiceData = invoiceDoc.data();
-        
-        const customerQuery = await db.collection("customers")
-          .where("name", "==", invoiceData.customerName)
-          .limit(1)
-          .get();
-        
-        if (!customerQuery.empty) {
-          const customerDoc = customerQuery.docs[0];
-          const customerData = customerDoc.data();
-          const pendingAmount = (customerData.pendingAmount || 0) - (invoiceData.suggestedPrice - (invoiceData.amountPaid || 0));
-          
-          await db.collection("customers").doc(customerDoc.id).update({
-            pendingAmount: Math.max(0, pendingAmount)
-          });
-        }
-      }
-      
-      alert(currentLang === 'es' ? 'Estado actualizado correctamente' : 'Status updated successfully');
-      loadWorkflowData();
-      checkAlerts();
-    } catch (error) {
-      console.error("Error updating status:", error);
-      alert(currentLang === 'es' ? 'Error al actualizar el estado' : 'Error updating status');
-    }
-  }
-
-  async function loadWorkflowItem(docId) {
-    try {
-      const doc = await db.collection("invoices").doc(docId).get();
-      if (doc.exists) {
-        const data = doc.data();
-        loadInvoiceFromHistory(docId, data);
-        closeModal("workflowModal");
-      }
-    } catch (error) {
-      console.error("Error loading workflow item:", error);
     }
   }
 
@@ -2449,27 +2181,6 @@
           <button class="btn-save" style="padding: 5px 10px; font-size: 0.8rem;" onclick="openDashboard(); openTab(event, 'inventory-tab')">${currentLang === 'es' ? 'Reponer' : 'Restock'}</button>
         `;
         alertsContainer.appendChild(alertDiv);
-      }
-      
-      // Verificar trabajos recibidos sin avanzar
-      const receivedQuery = await db.collection("invoices")
-        .where("status", "==", "received")
-        .orderBy("date", "asc")
-        .get();
-      
-      if (receivedQuery.size > 0) {
-        const oldest = receivedQuery.docs[0].data();
-        const daysOld = Math.floor((new Date() - new Date(oldest.date)) / (1000 * 60 * 60 * 24));
-        
-        if (daysOld > 2) {
-          const alertDiv = document.createElement("div");
-          alertDiv.className = "alert-banner";
-          alertDiv.innerHTML = `
-            <span>${currentLang === 'es' ? `Tienes ${receivedQuery.size} trabajos recibidos sin avanzar. El más antiguo tiene ${daysOld} días.` : `You have ${receivedQuery.size} received jobs not started. The oldest is ${daysOld} days old.`}</span>
-            <button class="btn-workflow" style="padding: 5px 10px; font-size: 0.8rem;" onclick="openWorkflow()">${currentLang === 'es' ? 'Ver flujo' : 'View workflow'}</button>
-          `;
-          alertsContainer.appendChild(alertDiv);
-        }
       }
       
     } catch (error) {
@@ -2853,50 +2564,6 @@
     }).catch(err => {
       console.error('Error al copiar el mensaje: ', err);
     });
-  }
-
-  async function sendStatusNotification() {
-    const customerName = document.getElementById("customerName").value;
-    const invoiceNumber = document.getElementById("invoiceNumber").value;
-    const status = document.getElementById("status").value;
-    
-    if (!customerName || !invoiceNumber) {
-      alert(currentLang === 'es' ? 'Por favor complete los datos del cliente y número de factura' : 'Please fill in customer name and invoice number');
-      return;
-    }
-    
-    try {
-      // Buscar la factura en Firestore si no está cargada
-      let invoiceData;
-      if (currentInvoiceId) {
-        const doc = await db.collection("invoices").doc(currentInvoiceId).get();
-        invoiceData = doc.data();
-      } else {
-        const invoiceQuery = await db.collection("invoices")
-          .where("invoiceNumber", "==", invoiceNumber)
-          .limit(1)
-          .get();
-        
-        if (invoiceQuery.empty) {
-          alert(currentLang === 'es' ? 'No se encontró la factura' : 'Invoice not found');
-          return;
-        }
-        
-        invoiceData = invoiceQuery.docs[0].data();
-      }
-      
-      // Generar el mensaje según el estado
-      currentWhatsAppTemplate = status;
-      const message = generateWhatsAppMessage(invoiceData);
-      
-      // Aquí podrías implementar el envío real de la notificación
-      // Por ahora solo mostramos un mensaje de éxito
-      alert(translations[currentLang]["notification-sent"]);
-      
-    } catch (error) {
-      console.error("Error sending notification:", error);
-      alert(currentLang === 'es' ? 'Error al enviar la notificación' : 'Error sending notification');
-    }
   }
 
   // Manejar cambio de tipo de filamento
